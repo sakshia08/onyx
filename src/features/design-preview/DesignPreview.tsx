@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Screen } from "@/app/Screen";
 import { PigIcon } from "@/components/PigIcon";
 import { TabBar } from "@/components/TabBar";
-import { CardsSection } from "./sections/CardsSection";
 import { ColorsSection } from "./sections/ColorsSection";
 import { ControlsSection } from "./sections/ControlsSection";
 import { EntriesSection } from "./sections/EntriesSection";
+import { HomeSection } from "./sections/HomeSection";
 import { KeypadSection } from "./sections/KeypadSection";
 import { PigSection } from "./sections/PigSection";
 import { QuickAddSheetDemo } from "./sections/QuickAddSheetDemo";
@@ -36,7 +36,7 @@ export function DesignPreview() {
         <ColorsSection />
         <TypeSection />
         <ControlsSection />
-        <CardsSection />
+        <HomeSection />
         <EntriesSection />
         <KeypadSection />
         <SheetSection onOpenSheet={openSheet} />

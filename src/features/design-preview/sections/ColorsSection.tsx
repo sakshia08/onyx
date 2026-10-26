@@ -1,3 +1,4 @@
+import { LiquidFill } from "@/components/LiquidFill";
 import { BUCKET_COLORS } from "@/domain/bucket-colors";
 import { PreviewSection } from "../PreviewSection";
 
@@ -23,9 +24,8 @@ const GROUPS: { title: string; tokens: { name: string; value: string }[] }[] = [
   {
     title: "Accent and status",
     tokens: [
-      { name: "accent-a", value: "#7C6CFF" },
-      { name: "accent-b", value: "#3E8BFF" },
-      { name: "accent-c", value: "#FF9E7A" },
+      { name: "liquid", value: "#7C6CFF" },
+      { name: "accent", value: "#3E8BFF" },
       { name: "positive", value: "#4ADE80" },
       { name: "warning", value: "#FFB547" },
       { name: "negative", value: "#FF5A5F" },
@@ -73,9 +73,9 @@ export function ColorsSection() {
           </div>
         </div>
         <div>
-          <h3 className="mb-2 text-caption text-text-2">Aurora</h3>
-          <div className="aurora grain h-16 rounded-inner border border-hairline-strong">
-            <div aria-hidden="true" className="aurora-mesh" />
+          <h3 className="mb-2 text-caption text-text-2">Liquid</h3>
+          <div className="relative h-16 overflow-hidden rounded-inner border border-hairline bg-surface-1">
+            <LiquidFill level={0.6} color="var(--liquid)" strength={62} width={350} height={64} />
           </div>
         </div>
       </div>

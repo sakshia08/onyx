@@ -222,18 +222,19 @@ Shown on first launch, and when a new month begins (after the recap).
 From top to bottom:
 
 1. **Header:** "Good evening, {name}" and the month name. An eye icon toggles the privacy blur.
-2. **Hero card** (aurora gradient):
-   - Label "Left this month" over the remaining amount, large (red if negative).
-   - "of ₹60,000 · ₹26,550 used" and a thin progress line.
-   - Footer: "12 days left". (No "safe today" figure, see §7.2.)
+2. **Month tank** (the hero, §10.1): a tall card filled with violet liquid that drains as money is used.
+   - Label "Left this month" with a "12 days left" pill beside it, over the remaining amount, large.
+   - Footer: "₹26,550 used of ₹60,000". (No "safe today" figure, see §7.2.)
+   - Over budget: the tank is empty, the amount is red with a minus sign, and the edge turns red.
 3. **Due now:** shown only when ask-first recurring items are due. One row per item, with Log and Skip.
 4. **Quick log:** a horizontal row of favorite chips. One tap logs the entry and shows an undo toast.
-5. **Buckets:** a 2-column grid, spend buckets first, then save buckets. Each card shows:
-   - The emoji in a tinted tile, the name, and the remaining amount, large.
+5. **Buckets:** "Spend" and "Save" groups, each a 3-column grid of tall **vials**. Each vial shows:
+   - Liquid in the bucket's color. Spend vials drain as money is used; save vials fill up as money is put away. An over-budget vial is empty with a red edge.
+   - The emoji at the top; the name and the remaining amount at the bottom, over the liquid.
    - A sub-line:
      - Spend buckets: "of ₹8,000", or "Over by ₹500" in red.
-     - Save buckets: "left to put away", "All put away", or "₹1,000 extra put away" (neutral, never red).
-   - A progress bar in the bucket's color with the pace tick, plus an amber dot when ahead of pace.
+     - Save buckets: "left to put away", "All put away", or "extra put away" with the big number shown as "+₹1,000" (neutral, never red).
+   - A small pace notch on the right edge of spend vials (where the level "should" be today), plus an amber dot when ahead of pace.
    - Tap opens the bucket's detail screen. Long-press opens Quick add with that bucket already selected.
 6. **Coming up:** recurring items still due this month, with their total.
 7. **Piggy peek:** a compact card for the active piggy with the nearest date ("Goa trip · 62% · 47 days"). Tapping it opens the Piggy tab.
@@ -355,7 +356,7 @@ This tab is called **Piggy**. It has its own personality: the same dark base, wi
   4. Show **setup** for the new month.
 - Months in which the app was never opened are not created.
 - If the clock moves backwards (the current month is earlier than the active month), do nothing destructive and show a small warning.
-- **Recap:** story-style cards I swipe through, dark with the aurora glow.
+- **Recap:** story-style cards I swipe through, dark with the soft violet glow and liquid fills.
   1. "October in review": budget, used, and left (or over).
   2. Buckets: which stayed within budget, and which went over and by how much.
   3. The biggest expense and the most-used bucket.
@@ -439,7 +440,7 @@ This tab is called **Piggy**. It has its own personality: the same dark base, wi
 
 ## 9. Navigation and screens
 
-**Tab bar:** a floating glass bar with **Home · Insights · ( + ) · Piggy · Settings**. The + is a raised white circular button that opens Quick add.
+**Tab bar:** a floating glass pill with icon tabs **Home · Insights · Piggy · Settings** (a small dot marks the active tab; each has a VoiceOver label), and a separate white circular **+** beside it that opens Quick add.
 
 **Screens:**
 
@@ -459,19 +460,23 @@ Use hash-based routing, so the app works on any static host.
 
 ### 10.1 Direction
 
-Dark, elegant, minimal and premium, like a high-end fintech app. It must not look like a template dashboard.
+Dark, elegant, calm and premium, with its own personality. It must not look like a template dashboard or a copy of any fintech app.
 
-**What to take from `design/inspo/`:**
+**The idea: liquid.** Money is shown as liquid in containers, the same language as the pig's fill (§10.6), which is the app's heart.
+- **The month** is a tank that drains as money is used (§8.3).
+- **Buckets** are vials in their own color. Spend vials drain; save vials fill up, like the pig.
+- **Piggies** fill up as you stash.
+- Liquid has a gentle two-layer wave that drifts slowly, and springs to its new level when an amount changes.
 
+**Everything else stays quiet** so the liquid stands out:
 - **Background:** near-black, with one soft colored glow at the top of the screen.
-- **Hero card:** an iridescent mesh gradient (violet → blue → peach) with fine grain.
 - **Numbers:** huge and confident, with the ₹ sign and paise smaller and dimmer.
 - **Controls:** a glassy floating tab bar, pill buttons, and white primary buttons on dark.
-- **Lists:** clean transaction rows with round icon avatars.
-- **Charts:** analytics bars where only the selected bar is lit.
-- **Piggy page:** borrows the cute "stash" idea (a pig, goal cards, progress), but in this dark, elegant style with pink accents, not the light pink look of the inspiration image.
+- **Lists:** clean rows with round, tinted emoji avatars.
+- **Charts:** bars where only the selected bar is lit.
+- **Piggy page:** a cute "stash" feel (the pig, goal cards, progress) in this dark style with pink accents.
 
-Do not copy any of the inspiration screens directly.
+`design/inspo/` (kept local, not in git) is for mood and quality only. Do not copy any of its screens.
 
 ### 10.2 Color tokens (CSS variables)
 
@@ -485,7 +490,8 @@ Do not copy any of the inspiration screens directly.
 | `--text-1` | `#F5F5F7` | primary text |
 | `--text-2` | `#A1A1AA` | secondary text |
 | `--text-3` | `#83838D` | tertiary text, dimmed paise (changed from `#6B6B75`, which failed AA contrast; don't put it on `--surface-3`) |
-| `--accent-a` / `-b` / `-c` | `#7C6CFF` / `#3E8BFF` / `#FF9E7A` | aurora gradient |
+| `--liquid` | `#7C6CFF` | the month tank's liquid, the screen glow |
+| `--accent` | `#3E8BFF` | focus ring, text caret, links |
 | `--piggy` | `#FF8FB8` | piggy pink (fills, buttons) |
 | `--piggy-strong` | `#FF5FA2` | pig outline strokes, glow |
 | `--positive` | `#4ADE80` | money back, done |
@@ -506,7 +512,8 @@ All text must meet WCAG AA contrast against its background.
 
 | Style | Size | Weight | Notes |
 |---|---|---|---|
-| Display | 48/52 | Semibold | Tracking −0.03em; hero amounts |
+| Hero | 56/60 | Semibold | Tracking −0.03em; the month tank's amount |
+| Display | 48/52 | Semibold | Tracking −0.03em; large amounts (keypad, piggy) |
 | Title | 28/34 | Semibold | |
 | Headline | 17/22 | Semibold | |
 | Body | 16/22 | Regular | |
@@ -522,18 +529,18 @@ All text must meet WCAG AA contrast against its background.
 ### 10.4 Shape, spacing and depth
 
 - **Spacing:** a 4 px grid, 20 px side padding on screens, and 28 px between sections.
-- **Radii:** 24 px for cards, 16 px for inner elements, and full pills for chips and buttons.
+- **Radii:** 32 px for the month tank, 28 px for bucket vials, 24 px for cards, 16 px for inner elements, and full pills for chips and buttons.
 - **Depth:** create depth with layered surfaces and hairlines rather than heavy shadows. Use soft colored glows for emphasis.
 - **Glass:** `backdrop-filter: blur(20px) saturate(140%)` over `rgba(18,18,21,0.72)` with a hairline border. Used for the tab bar, sheet headers and sticky footers.
-- **Grain:** a fine noise overlay (inline SVG, 3–5% opacity) on hero cards.
+- **Grain:** a fine noise overlay (inline SVG, 3–5% opacity) on the month tank.
 
 ### 10.5 Components
 
 - **Button** (primary white, secondary surface, piggy pink, ghost, destructive), Chip (selectable, colored), Segmented control
-- **Card**, Hero aurora card, Bucket card, Entry row, Section header, Empty state
+- **Card**, Month tank, Bucket vial, Liquid fill, Quick-log chip, Piggy peek, Entry row, Section header, Empty state
 - **Amount display**, Progress bar with pace tick, Progress ring
 - **Bottom sheet**, Custom keypad, Toast with Undo
-- **Tab bar** with the raised + button
+- **Tab bar** (glass pill of icon tabs, with a separate white +)
 - **Pig illustration**
 
 ### 10.6 The pig
@@ -559,7 +566,7 @@ All text must meet WCAG AA contrast against its background.
   - Cards stagger in on first load, 30 ms apart.
   - Tapping scales elements to 0.97.
   - Progress bars and the pig's fill animate to new values.
-  - The aurora gradient drifts very slowly.
+  - Liquid waves drift slowly, and levels spring to new values (spend: the bucket's vial and the month tank drain).
 - **Reduced motion:** respect `prefers-reduced-motion` and the in-app setting by replacing movement with fades.
 - **No haptics:** iOS web apps can't vibrate, so give visual feedback instead.
 
@@ -842,3 +849,4 @@ Wait for my go-ahead before starting the next phase.
 6. **Leftover money** ends with its month, and each new month starts fresh. Piggy savings carry across months. The optional "move leftover into a piggy" step stays. A leftover move counts as start-of-month money for the piggy's suggestion (§7.4, §8.6).
 7. **`--text-3`** changed to `#83838D` for AA contrast (§10.2).
 8. **Public repo:** the GitHub repo is public (was private). `design/inspo/` is git-ignored because those are other people's designs (§12).
+9. **Design direction "Liquid"** (chosen from three concepts after the first design looked too close to the inspo): month tank, bucket vials, liquid fills everywhere, new tab bar. Replaces the aurora hero card and the 2-column bucket grid (§8.3, §9, §10).

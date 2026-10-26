@@ -3,15 +3,15 @@ import { cn } from "@/lib/cn";
 
 interface ScreenProps {
   children: React.ReactNode;
-  /** The soft glow at the top: aurora violet by default, pink on the Piggy tab. */
-  glow?: "aurora" | "piggy";
+  /** The soft glow at the top: liquid violet by default, pink on the Piggy tab. */
+  glow?: "liquid" | "piggy";
   className?: string;
 }
 
 /** A tab screen: top glow, safe-area padding and room for the tab bar. */
-export function Screen({ children, glow = "aurora", className }: ScreenProps) {
+export function Screen({ children, glow = "liquid", className }: ScreenProps) {
   const glowStyle = {
-    "--glow": glow === "piggy" ? "var(--piggy-strong)" : "var(--accent-a)",
+    "--glow": glow === "piggy" ? "var(--piggy-strong)" : "var(--liquid)",
   } as CSSProperties;
   return (
     <>

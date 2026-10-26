@@ -16,6 +16,21 @@ for (const width of WIDTHS) {
     await page.screenshot({ path: `${DIR}/design-full-${width}.png`, fullPage: true });
   });
 
+  test(`home mockup at ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/#/design/home");
+    await settle(page);
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: `${DIR}/home-mockup-${width}.png` });
+    if (width === 390) {
+      await page.evaluate(() => {
+        window.scrollTo(0, 640);
+      });
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: `${DIR}/home-mockup-scrolled-390.png` });
+    }
+  });
+
   test(`home placeholder and tab bar at ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/#/");
@@ -27,7 +42,7 @@ for (const width of WIDTHS) {
 test("design preview, screen by screen at 390", async ({ page }) => {
   await page.goto("/#/design");
   await settle(page);
-  for (const id of ["colors", "type", "controls", "cards", "entries", "keypad", "pig"]) {
+  for (const id of ["colors", "type", "controls", "home", "entries", "keypad", "pig"]) {
     await page.locator(`#${id}`).evaluate((el) => {
       el.scrollIntoView({ block: "start" });
     });
@@ -46,6 +61,22 @@ test("bottom sheet open at 390", async ({ page }) => {
   }
   await page.waitForTimeout(600);
   await page.screenshot({ path: `${DIR}/sheet-390.png` });
+});
+
+test("over budget and spending at 390", async ({ page }) => {
+  await page.goto("/#/design");
+  await settle(page);
+  await page.locator("#home").evaluate((el) => {
+    el.scrollIntoView({ block: "start" });
+  });
+  await page.getByRole("button", { name: "Over budget" }).click();
+  await page.getByRole("button", { name: "Spend ₹500 on Food" }).click();
+  await page.getByRole("button", { name: "Put ₹500 in Investing" }).click();
+  await page.waitForTimeout(1400);
+  await page.screenshot({ path: `${DIR}/home-vials-after-390.png` });
+  await page.getByRole("region", { name: "This month" }).screenshot({
+    path: `${DIR}/home-tank-over-budget-390.png`,
+  });
 });
 
 test("toast at 390", async ({ page }) => {

@@ -130,3 +130,25 @@ export const SAMPLE_DAYS: { label: string; total: Paise; entries: SampleEntry[] 
     ],
   },
 ];
+
+/** The month as a whole, for the tank. */
+export const SAMPLE_MONTH = {
+  name: "November",
+  budget: rupees(60_000),
+  used: rupees(26_550),
+  daysLeft: SAMPLE_DAY.daysInMonth - SAMPLE_DAY.today,
+} as const;
+
+export const SAMPLE_PIGGY = {
+  name: "Goa trip",
+  emoji: "🌴",
+  saved: rupees(18_600),
+  target: rupees(30_000),
+  daysLeft: 47,
+} as const;
+
+export const SAMPLE_FAVORITES = [
+  { emoji: "☕", label: "Coffee", amount: rupees(120) },
+  { emoji: "🚇", label: "Metro", amount: rupees(40) },
+  { emoji: "🍱", label: "Lunch", amount: rupees(250) },
+] as const;

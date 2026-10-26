@@ -24,7 +24,7 @@ export function AmountInputDisplay({ input, className }: AmountInputDisplayProps
           <span>{input === "" ? "0" : formatExpression(input)}</span>
           <span
             aria-hidden="true"
-            className="caret ml-1 h-[0.8em] w-0.5 self-center rounded-pill bg-accent-b"
+            className="caret ml-1 h-[0.8em] w-0.5 self-center rounded-pill bg-accent"
           />
         </span>
       )}

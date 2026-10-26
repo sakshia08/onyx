@@ -2,16 +2,13 @@ import { ChartColumn, House, Plus, Settings, type LucideIcon } from "lucide-reac
 import { motion } from "motion/react";
 import { NavLink } from "react-router";
 import { tapScale } from "@/lib/motion";
-import { cn } from "@/lib/cn";
 import { PigIcon } from "./PigIcon";
 
 type TabIcon = LucideIcon | typeof PigIcon;
 
-const LEFT_TABS: { to: string; label: string; Icon: TabIcon }[] = [
+const TABS: { to: string; label: string; Icon: TabIcon }[] = [
   { to: "/", label: "Home", Icon: House },
   { to: "/insights", label: "Insights", Icon: ChartColumn },
-];
-const RIGHT_TABS: { to: string; label: string; Icon: TabIcon }[] = [
   { to: "/piggy", label: "Piggy", Icon: PigIcon },
   { to: "/settings", label: "Settings", Icon: Settings },
 ];
@@ -20,33 +17,28 @@ interface TabBarProps {
   onAdd: () => void;
 }
 
-/** Floating glass tab bar with the raised white + (PRD §9). */
+/** A floating glass pill of four tabs, with the white + standing on its own beside it (PRD §9). */
 export function TabBar({ onAdd }: TabBarProps) {
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 z-30 mx-auto max-w-[560px] px-screen"
+      className="fixed inset-x-0 z-30 mx-auto flex max-w-[560px] gap-3 px-screen"
       style={{ bottom: "max(var(--safe-bottom), 16px)" }}
     >
-      <div className="glass flex h-(--tab-bar-height) items-center rounded-pill px-2">
-        {LEFT_TABS.map((tab) => (
-          <TabLink key={tab.to} {...tab} />
-        ))}
-        <div className="flex flex-1 justify-center">
-          <motion.button
-            type="button"
-            aria-label="Add expense"
-            onClick={onAdd}
-            whileTap={tapScale}
-            className="grid size-14 -translate-y-3 place-items-center rounded-pill bg-text-1 text-bg ring-[5px] ring-bg"
-          >
-            <Plus aria-hidden="true" className="size-7" strokeWidth={2.5} />
-          </motion.button>
-        </div>
-        {RIGHT_TABS.map((tab) => (
+      <div className="glass flex h-(--tab-bar-height) flex-1 items-center justify-around rounded-pill px-2">
+        {TABS.map((tab) => (
           <TabLink key={tab.to} {...tab} />
         ))}
       </div>
+      <motion.button
+        type="button"
+        aria-label="Add expense"
+        onClick={onAdd}
+        whileTap={tapScale}
+        className="grid size-(--tab-bar-height) shrink-0 place-items-center rounded-pill bg-text-1 text-bg"
+      >
+        <Plus aria-hidden="true" className="size-7" strokeWidth={2.5} />
+      </motion.button>
     </nav>
   );
 }
@@ -56,17 +48,23 @@ function TabLink({ to, label, Icon }: { to: string; label: string; Icon: TabIcon
     <NavLink
       to={to}
       end={to === "/"}
-      className={({ isActive }) =>
-        cn(
-          "flex h-full flex-1 flex-col items-center justify-center gap-1 transition-colors",
-          isActive ? "text-text-1" : "text-text-3",
-        )
-      }
+      aria-label={label}
+      className="relative grid size-12 place-items-center"
     >
       {({ isActive }) => (
         <>
-          <Icon aria-hidden="true" className="size-[22px]" strokeWidth={isActive ? 2.2 : 1.8} />
-          <span className="text-micro font-medium tracking-normal">{label}</span>
+          <Icon
+            aria-hidden="true"
+            className={isActive ? "size-6 text-text-1" : "size-6 text-text-3"}
+            strokeWidth={isActive ? 2.2 : 1.8}
+          />
+          {isActive && (
+            <motion.span
+              layoutId="tab-dot"
+              aria-hidden="true"
+              className="absolute bottom-0.5 size-1 rounded-pill bg-text-1"
+            />
+          )}
         </>
       )}
     </NavLink>

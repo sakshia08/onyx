@@ -11,6 +11,12 @@ const devRoutes: RouteObject[] = import.meta.env.DEV
           Component: (await import("@/features/design-preview/DesignPreview")).DesignPreview,
         }),
       },
+      {
+        path: "/design/home",
+        lazy: async () => ({
+          Component: (await import("@/features/design-preview/HomeMockup")).HomeMockup,
+        }),
+      },
     ]
   : [];
 

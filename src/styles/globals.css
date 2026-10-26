@@ -46,13 +46,13 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--accent-b);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
     border-radius: 8px;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--accent-a) 40%, transparent);
+    background: color-mix(in srgb, var(--liquid) 40%, transparent);
   }
 }
 
@@ -120,53 +120,7 @@
   animation-iteration-count: 1 !important;
 }
 
-/* §10.1 Hero card: iridescent mesh (violet → blue → peach) that drifts very slowly (§10.7) */
 @layer components {
-  .aurora {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    background-color: var(--surface-2);
-  }
-  .aurora-mesh {
-    position: absolute;
-    inset: -45%;
-    z-index: -2;
-    background:
-      radial-gradient(38% 42% at 24% 34%, var(--accent-a) 0%, transparent 72%),
-      radial-gradient(36% 38% at 74% 26%, var(--accent-b) 0%, transparent 72%),
-      radial-gradient(40% 40% at 70% 74%, var(--accent-c) 0%, transparent 72%),
-      radial-gradient(
-        30% 32% at 34% 76%,
-        color-mix(in srgb, var(--accent-a) 55%, var(--accent-c)) 0%,
-        transparent 72%
-      );
-    filter: blur(22px) saturate(130%);
-    animation: aurora-drift 40s ease-in-out infinite alternate;
-  }
-  .aurora-shade {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: linear-gradient(
-      200deg,
-      transparent 0%,
-      color-mix(in srgb, var(--bg) 22%, transparent) 50%,
-      color-mix(in srgb, var(--bg) 48%, transparent) 100%
-    );
-  }
-  @keyframes aurora-drift {
-    0% {
-      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-    }
-    50% {
-      transform: translate3d(5%, -4%, 0) rotate(10deg) scale(1.06);
-    }
-    100% {
-      transform: translate3d(-4%, 5%, 0) rotate(-8deg) scale(1);
-    }
-  }
-
   /* §10.1 One soft colored glow at the top of the screen */
   .screen-glow {
     position: fixed;
@@ -176,7 +130,7 @@
     z-index: 0;
     background: radial-gradient(
       70% 100% at 50% 0%,
-      color-mix(in srgb, var(--glow, var(--accent-a)) 22%, transparent) 0%,
+      color-mix(in srgb, var(--glow, var(--liquid)) 22%, transparent) 0%,
       transparent 70%
     );
   }

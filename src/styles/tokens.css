@@ -15,9 +15,8 @@
   --text-1: #f5f5f7;
   --text-2: #a1a1aa;
   --text-3: #83838d; /* PRD §17: was #6B6B75, failed AA */
-  --accent-a: #7c6cff;
-  --accent-b: #3e8bff;
-  --accent-c: #ff9e7a;
+  --liquid: #7c6cff; /* the month's liquid in the tank, and the screen glow */
+  --accent: #3e8bff; /* focus ring, caret, links */
   --piggy: #ff8fb8;
   --piggy-strong: #ff5fa2;
   --positive: #4ade80;
@@ -76,9 +75,8 @@
   --color-text-1: var(--text-1);
   --color-text-2: var(--text-2);
   --color-text-3: var(--text-3);
-  --color-accent-a: var(--accent-a);
-  --color-accent-b: var(--accent-b);
-  --color-accent-c: var(--accent-c);
+  --color-liquid: var(--liquid);
+  --color-accent: var(--accent);
   --color-piggy: var(--piggy);
   --color-piggy-strong: var(--piggy-strong);
   --color-positive: var(--positive);
@@ -90,6 +88,10 @@
   --font-round: var(--font-round);
 
   /* §10.3 Type scale: size / line height / weight / tracking */
+  --text-hero: 56px;
+  --text-hero--line-height: 60px;
+  --text-hero--font-weight: 600;
+  --text-hero--letter-spacing: -0.03em;
   --text-display: 48px;
   --text-display--line-height: 52px;
   --text-display--font-weight: 600;
@@ -117,6 +119,8 @@
   --text-micro--letter-spacing: 0.08em;
 
   /* §10.4 Radii */
+  --radius-tank: 32px;
+  --radius-vial: 28px;
   --radius-card: 24px;
   --radius-inner: 16px;
   --radius-pill: 9999px;

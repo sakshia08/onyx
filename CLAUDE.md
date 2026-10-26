@@ -38,7 +38,7 @@ Vite + React + TypeScript (strict) · Tailwind CSS v4 · shadcn/ui (Radix, resty
 
 ## Design rules (PRD §10)
 - Use only the tokens in `src/styles/tokens.css` (from §10.2–10.4). No one-off colors or sizes.
-- Near-black `--bg` with one soft colored glow at the top. Hero card: aurora mesh gradient (violet → blue → peach) with fine grain.
+- Design direction **"Liquid"** (§10.1): money is liquid in containers, like the pig's fill. Month tank drains, bucket vials drain (spend) or fill (save). Near-black `--bg`, one soft glow at the top, everything else quiet. Don't copy the inspo.
 - Depth from layered surfaces and hairlines, not heavy shadows. Glass for tab bar, sheet headers, sticky footers.
 - 4px grid, 20px screen padding, 28px between sections. Radii: 24 cards, 16 inner, full pills.
 - Numbers: tabular-nums, ₹ at ~55% size in `--text-2`, paise only when non-zero in `--text-3`, `en-IN` grouping.

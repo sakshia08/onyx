@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { amountParts, spokenAmount, type Paise, type SignDisplay } from "@/domain/money";
 import { cn } from "@/lib/cn";
 
-type AmountSize = "display" | "title" | "headline" | "body" | "callout" | "caption";
+type AmountSize = "hero" | "display" | "title" | "headline" | "body" | "callout" | "caption";
 type AmountTone = "auto" | "default" | "positive" | "negative" | "inherit";
 
 const sizeClass: Record<AmountSize, string> = {
+  hero: "text-hero",
   display: "text-display",
   title: "text-title",
   headline: "text-headline",

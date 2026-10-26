@@ -11,8 +11,6 @@ interface ProgressBarProps {
   color: string;
   over?: boolean;
   size?: "thin" | "regular";
-  /** Light track, for use on the aurora hero card. */
-  onAurora?: boolean;
   label: string;
   className?: string;
 }
@@ -23,7 +21,6 @@ export function ProgressBar({
   color,
   over = false,
   size = "regular",
-  onAurora = false,
   label,
   className,
 }: ProgressBarProps) {
@@ -37,12 +34,7 @@ export function ProgressBar({
       aria-valuenow={Math.round(clamped * 100)}
       className={cn("relative", size === "thin" ? "h-1" : "h-1.5", className)}
     >
-      <div
-        className={cn(
-          "absolute inset-0 overflow-hidden rounded-pill",
-          onAurora ? "bg-text-1/20" : "bg-text-1/8",
-        )}
-      >
+      <div className="absolute inset-0 overflow-hidden rounded-pill bg-text-1/8">
         <motion.div
           className="h-full origin-left rounded-pill"
           style={{ backgroundColor: over ? "var(--negative)" : color, width: "100%" }}

@@ -5,11 +5,11 @@ import { Screen } from "./Screen";
 interface PlaceholderScreenProps {
   title: string;
   phase: number;
-  glow?: "aurora" | "piggy";
+  glow?: "liquid" | "piggy";
 }
 
 /** Stand-in for screens that later phases build. */
-export function PlaceholderScreen({ title, phase, glow = "aurora" }: PlaceholderScreenProps) {
+export function PlaceholderScreen({ title, phase, glow = "liquid" }: PlaceholderScreenProps) {
   return (
     <Screen glow={glow}>
       <h1 className="pt-2 text-title text-text-1">{title}</h1>
@@ -18,7 +18,7 @@ export function PlaceholderScreen({ title, phase, glow = "aurora" }: Placeholder
         {import.meta.env.DEV && (
           <Link
             to="/design"
-            className="mt-3 inline-flex min-h-11 items-center text-callout font-semibold text-accent-b"
+            className="mt-3 inline-flex min-h-11 items-center text-callout font-semibold text-accent"
           >
             Open the design preview
           </Link>

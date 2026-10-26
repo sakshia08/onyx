@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** Phase 1 in progress. The design preview page is built and screenshotted (`screenshots/phase-1/`). **Waiting for the user's design feedback.** After approval: domain logic with tests, then the saved store.
+**Current status:** Phase 1 in progress. Liquid design direction chosen and built into the design preview (`/#/design`, full Home mockup at `/#/design/home`). **Waiting for the user's feedback on it.** After approval: domain logic with tests, then the saved store.
 
 ## Checklist (PRD §14)
 
@@ -21,7 +21,7 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] Design preview page at `/#/design` (dev only):
   - [x] Colors and type scale
   - [x] Buttons, chips, segmented control, cards
-  - [x] Hero aurora card, bucket card, entry rows
+  - [x] Month tank, bucket vials, liquid fill, quick-log chip, piggy peek, entry rows (Liquid direction)
   - [x] Keypad, bottom sheet, toast, tab bar
   - [x] Pig illustration with fill animation
 - [ ] **Design preview approved by the user** (before anything else is built)
@@ -106,6 +106,8 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **Node:** WSL has Node 22.14; React Router 8.4 asks for 22.22+. It works for now (browser code), but upgrade Node before Phase 4.
 - **tailwind-merge** is taught our token names in `src/lib/cn.ts` (otherwise it drops sizes like `text-display`). A test guards this.
 - **Tailwind defaults switched off** (colors, text sizes, radii, shadows), so only design tokens can be used.
+- **Design direction "Liquid":** the first design copied the inspo too closely; the user picked "Liquid" from three concepts (Liquid, Ledger, Dial). PRD §8.3, §9 and §10 updated. Tokens: `--accent-a/b/c` replaced by `--liquid` and `--accent`; new `text-hero`, `rounded-tank`, `rounded-vial`.
+- **Save bucket over plan:** big number shows "+₹1,000" in normal white, with "extra put away" (user confirmed).
 - **Status-bar fade:** a soft gradient under the status bar so scrolled content doesn't clash with the clock.
 - **Toast** is near-solid (`surface-2` at 95% + blur), not glass, so its text stays readable over busy content.
 - **Save bucket over plan** shows the big number as "+₹1,000" in normal color with "extra put away" underneath. (To confirm with the user.)

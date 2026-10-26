@@ -6,7 +6,7 @@ import { extendTailwindMerge } from "tailwind-merge";
 const twMerge = extendTailwindMerge({
   extend: {
     theme: {
-      text: ["display", "title", "headline", "body", "callout", "caption", "micro"],
+      text: ["hero", "display", "title", "headline", "body", "callout", "caption", "micro"],
       color: [
         "bg",
         "surface-1",
@@ -17,9 +17,8 @@ const twMerge = extendTailwindMerge({
         "text-1",
         "text-2",
         "text-3",
-        "accent-a",
-        "accent-b",
-        "accent-c",
+        "liquid",
+        "accent",
         "piggy",
         "piggy-strong",
         "positive",
@@ -27,7 +26,7 @@ const twMerge = extendTailwindMerge({
         "negative",
         "glass",
       ],
-      radius: ["card", "inner", "pill"],
+      radius: ["tank", "vial", "card", "inner", "pill"],
       font: ["ui", "round"],
     },
   },
