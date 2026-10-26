@@ -1,0 +1,132 @@
+/*
+ * Design tokens (PRD §10). The only colors, sizes, radii and motion values the app may use.
+ * Tailwind's default palette, type scale, radii and shadows are switched off below,
+ * so a one-off value can't sneak in.
+ */
+
+:root {
+  /* §10.2 Colors */
+  --bg: #09090b;
+  --surface-1: #121215;
+  --surface-2: #1a1a1f;
+  --surface-3: #24242b;
+  --hairline: rgba(255, 255, 255, 0.07);
+  --hairline-strong: rgba(255, 255, 255, 0.12);
+  --text-1: #f5f5f7;
+  --text-2: #a1a1aa;
+  --text-3: #83838d; /* PRD §17: was #6B6B75, failed AA */
+  --accent-a: #7c6cff;
+  --accent-b: #3e8bff;
+  --accent-c: #ff9e7a;
+  --piggy: #ff8fb8;
+  --piggy-strong: #ff5fa2;
+  --positive: #4ade80;
+  --warning: #ffb547;
+  --negative: #ff5a5f;
+
+  /* Bucket palette (§10.2) */
+  --bucket-violet: #8b7cff;
+  --bucket-blue: #5b9dff;
+  --bucket-teal: #3dd6c6;
+  --bucket-green: #5bd68a;
+  --bucket-amber: #ffc25b;
+  --bucket-orange: #ff8f5b;
+  --bucket-rose: #ff6fae;
+  --bucket-slate: #9aa3b2;
+  --tint-alpha: 16%; /* tinted backgrounds: 14–18% (§10.2) */
+
+  /* §10.4 Glass */
+  --glass-bg: rgba(18, 18, 21, 0.72);
+  --glass-blur: blur(20px) saturate(140%);
+
+  /* §10.4 Spacing */
+  --screen-pad: 20px;
+  --section-gap: 28px;
+
+  /* §10.8 Safe areas. Kept as variables so screenshots can simulate an iPhone. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* Layout */
+  --tab-bar-height: 64px;
+  --tap-min: 44px;
+
+  /* §10.3 Fonts */
+  --font-ui:
+    -apple-system, "SF Pro Text", "SF Pro Display", "Inter Variable", system-ui, sans-serif;
+  --font-round: ui-rounded, "SF Pro Rounded", "Inter Variable", sans-serif;
+}
+
+@theme inline {
+  /* Switch off Tailwind defaults so only tokens exist */
+  --color-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --font-*: initial;
+
+  --color-bg: var(--bg);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-accent-a: var(--accent-a);
+  --color-accent-b: var(--accent-b);
+  --color-accent-c: var(--accent-c);
+  --color-piggy: var(--piggy);
+  --color-piggy-strong: var(--piggy-strong);
+  --color-positive: var(--positive);
+  --color-warning: var(--warning);
+  --color-negative: var(--negative);
+  --color-glass: var(--glass-bg);
+
+  --font-ui: var(--font-ui);
+  --font-round: var(--font-round);
+
+  /* §10.3 Type scale: size / line height / weight / tracking */
+  --text-display: 48px;
+  --text-display--line-height: 52px;
+  --text-display--font-weight: 600;
+  --text-display--letter-spacing: -0.03em;
+  --text-title: 28px;
+  --text-title--line-height: 34px;
+  --text-title--font-weight: 600;
+  --text-title--letter-spacing: -0.02em;
+  --text-headline: 17px;
+  --text-headline--line-height: 22px;
+  --text-headline--font-weight: 600;
+  --text-headline--letter-spacing: -0.01em;
+  --text-body: 16px;
+  --text-body--line-height: 22px;
+  --text-body--font-weight: 400;
+  --text-callout: 15px;
+  --text-callout--line-height: 20px;
+  --text-callout--font-weight: 400;
+  --text-caption: 13px;
+  --text-caption--line-height: 18px;
+  --text-caption--font-weight: 500;
+  --text-micro: 11px;
+  --text-micro--line-height: 14px;
+  --text-micro--font-weight: 600;
+  --text-micro--letter-spacing: 0.08em;
+
+  /* §10.4 Radii */
+  --radius-card: 24px;
+  --radius-inner: 16px;
+  --radius-pill: 9999px;
+
+  /* §10.4 Spacing extras (Tailwind's 4px grid stays on for everything else) */
+  --spacing-screen: var(--screen-pad);
+  --spacing-section: var(--section-gap);
+  --spacing-tap: var(--tap-min);
+
+  /* §10.7 Motion: 150–250 ms fades */
+  --default-transition-duration: 200ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}

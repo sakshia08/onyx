@@ -1,0 +1,9 @@
+dist
+dev-dist
+coverage
+playwright-report
+test-results
+screenshots
+package-lock.json
+PRD.md
+PROMPT.md

@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dev-dist/
+*.tsbuildinfo
+
+# Test output
+coverage/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+# Screenshots are regenerated on every phase; keep them out of git
+screenshots/
+
+# Environment files (we have no secrets, but never commit these)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editors and OS clutter
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Hosting tool folders
+.vercel/
+.netlify/
+
+# Design inspiration (other people's designs, kept local only)
+design/inspo/
