@@ -1,0 +1,26 @@
+import { useEffect } from "react";
+import { useToast } from "@/components/toast-context";
+import { useSaveStatus } from "@/store";
+import { LoadErrorScreen } from "./LoadErrorScreen";
+import { Splash } from "./Splash";
+
+/** Holds the app back until saved data has loaded, and reports failed saves (PRD §13). */
+export function DataGate({ children }: { children: React.ReactNode }) {
+  const hydrated = useSaveStatus((s) => s.hydrated);
+  const loadError = useSaveStatus((s) => s.loadError);
+  const saveFailed = useSaveStatus((s) => s.saveFailed);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (!saveFailed) return;
+    toast.show({
+      tone: "error",
+      message: "Couldn't save your last change. Your iPhone may be full. Send yourself a backup.",
+      duration: 8000,
+    });
+  }, [saveFailed, toast]);
+
+  if (loadError !== null) return <LoadErrorScreen reason={loadError} />;
+  if (!hydrated) return <Splash />;
+  return <>{children}</>;
+}

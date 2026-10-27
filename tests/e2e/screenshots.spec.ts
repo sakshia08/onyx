@@ -98,3 +98,40 @@ test("pig states at 390", async ({ page }) => {
   await page.waitForTimeout(900);
   await page.screenshot({ path: `${DIR}/pig-sleeping-390.png` });
 });
+
+test("splash while saved data loads at 390", async ({ page }) => {
+  // Make IndexedDB never answer, so the splash stays up long enough to see
+  await page.addInitScript(() => {
+    Object.defineProperty(window.indexedDB, "open", { value: () => ({}) });
+  });
+  await page.goto("/#/");
+  await page.waitForTimeout(900);
+  await page.screenshot({ path: `${DIR}/splash-390.png` });
+});
+
+test("data from a newer version is refused, untouched, at 390", async ({ page }) => {
+  await page.goto("/#/");
+  await settle(page);
+  // Write newer-version data straight into idb-keyval's store, then reload
+  await page.evaluate(async () => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const req = indexedDB.open("keyval-store");
+      req.onsuccess = () => {
+        resolve(req.result);
+      };
+      req.onerror = () => {
+        reject(new Error("open failed"));
+      };
+    });
+    await new Promise<void>((resolve) => {
+      const tx = db.transaction("keyval", "readwrite");
+      tx.objectStore("keyval").put({ state: { data: { schemaVersion: 99 } }, version: 99 }, "onyx");
+      tx.oncomplete = () => {
+        resolve();
+      };
+    });
+  });
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Update Onyx to open your data" })).toBeVisible();
+  await page.screenshot({ path: `${DIR}/load-error-390.png` });
+});

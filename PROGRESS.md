@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** Phase 1 in progress. Liquid design direction chosen and built into the design preview (`/#/design`, full Home mockup at `/#/design/home`). **Waiting for the user's feedback on it.** After approval: domain logic with tests, then the saved store.
+**Current status:** **Phase 1 done** (waiting for the user's go-ahead to start Phase 2). Liquid design approved. Domain logic and the saved store are built and tested: 158 tests passing.
 
 ## Checklist (PRD §14)
 
@@ -24,9 +24,10 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
   - [x] Month tank, bucket vials, liquid fill, quick-log chip, piggy peek, entry rows (Liquid direction)
   - [x] Keypad, bottom sheet, toast, tab bar
   - [x] Pig illustration with fill animation
-- [ ] **Design preview approved by the user** (before anything else is built)
-- [ ] Domain logic in `src/domain/` with unit tests (all §7.5 examples, §13 edge cases). Started: `money.ts`, `expression.ts` (keypad maths) and part of `budget.ts` exist, with no tests yet.
-- [ ] Saved store with schema version (Zustand + IndexedDB)
+- [x] **Design preview approved by the user** (Liquid direction)
+- [x] Domain logic in `src/domain/` with unit tests: all §7.5 examples (1–13) and the §13 edge cases that are maths. Files: money, expression, dates, budget, totals, piggy, recurring, rollover, setup, suggestions, schema, migrations, backup, state, types.
+- [x] Saved store with schema version (Zustand persist + idb-keyval), safety copy, splash screen, load-error screen, failed-save toast
+- §13 edge cases left for their screens: "recap within a minute of midnight" (Phase 6 timer; the month check itself is tested) and "saving fails" toast (wired up; tested at the storage level).
 
 ### Phase 2: Monthly setup and Home
 - [ ] First launch (welcome, name)
@@ -107,6 +108,13 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **tailwind-merge** is taught our token names in `src/lib/cn.ts` (otherwise it drops sizes like `text-display`). A test guards this.
 - **Tailwind defaults switched off** (colors, text sizes, radii, shadows), so only design tokens can be used.
 - **Design direction "Liquid":** the first design copied the inspo too closely; the user picked "Liquid" from three concepts (Liquid, Ledger, Dial). PRD §8.3, §9 and §10 updated. Tokens: `--accent-a/b/c` replaced by `--liquid` and `--accent`; new `text-hero`, `rounded-tank`, `rounded-vial`.
+- **Opening balance counts as start-of-month money** for piggy suggestions, like leftover moves (PRD §7.4 only named leftovers). Otherwise "Already saved ₹X" wouldn't lower the monthly suggestion.
+- **Days left includes today** (PRD §7.1): 18 of 30 November is 13 days left. The design samples now use the domain function.
+- **Saved store never overwrites data it couldn't load:** writes are blocked until saved data has loaded and passed the zod check. Newer-version or damaged data shows a calm screen ("Nothing has been changed or deleted") and stays untouched. Before an upgrade, the raw old data is copied to `onyx-before-upgrade`; the restore safety copy lives under `onyx-safety-copy`, outside AppState (PRD §11).
+- **Save status lives in its own small store**, so reporting a failed save can never trigger another save.
+- **Heads-ups:** if one entry jumps past both 80% and 100%, only the 100% toast shows, and both are recorded.
+- **Yearly piggy cycles** skip ahead several years if the app wasn't opened; a 29 Feb target lands on 28 Feb in non-leap years.
+- **Bundle:** 201 KB gzipped (budget 250); zod added ~35 KB. `zod/mini` is an option later if size gets tight.
 - **Save bucket over plan:** big number shows "+₹1,000" in normal white, with "extra put away" (user confirmed).
 - **Status-bar fade:** a soft gradient under the status bar so scrolled content doesn't clash with the clock.
 - **Toast** is near-solid (`surface-2` at 95% + blur), not glass, so its text stays readable over busy content.

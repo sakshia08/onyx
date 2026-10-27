@@ -71,3 +71,40 @@ export function spokenAmount(value: Paise): string {
   if (rest !== 0) parts.push(`and ${rest} paise`);
   return `${value < 0 ? "minus " : ""}${parts.join(" ")}`;
 }
+
+/** a ÷ b rounded down, exactly, for whole numbers (b > 0). */
+export function floorDiv(a: number, b: number): number {
+  assertPaise(a);
+  if (!Number.isSafeInteger(b) || b <= 0) throw new Error(`Bad divisor: ${b}`);
+  let q = Math.floor(a / b);
+  // Correct any floating-point slip so q·b ≤ a < (q+1)·b always holds
+  while (q * b > a) q -= 1;
+  while ((q + 1) * b <= a) q += 1;
+  return q;
+}
+
+/** a ÷ b rounded up, exactly, for whole numbers (b > 0). */
+export function ceilDiv(a: number, b: number): number {
+  return -floorDiv(-a, b);
+}
+
+/** a ÷ b rounded to the nearest whole number, halves rounding up (b > 0). */
+export function roundDiv(a: number, b: number): number {
+  return floorDiv(2 * a + b, 2 * b);
+}
+
+/** Rounds paise up to the next whole rupee, e.g. 600001 → 600100. */
+export function roundUpToRupee(value: Paise): Paise {
+  return ceilDiv(value, PAISE_PER_RUPEE) * PAISE_PER_RUPEE;
+}
+
+/** Rounds paise to the nearest whole rupee. */
+export function roundToRupee(value: Paise): Paise {
+  return roundDiv(value, PAISE_PER_RUPEE) * PAISE_PER_RUPEE;
+}
+
+export function sumPaise(values: Iterable<Paise>): Paise {
+  let total = 0;
+  for (const v of values) total += assertPaise(v);
+  return assertPaise(total);
+}

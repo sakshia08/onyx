@@ -1,5 +1,6 @@
 import type { BucketColor } from "@/domain/bucket-colors";
 import type { BucketKind } from "@/domain/budget";
+import { daysLeft } from "@/domain/dates";
 import { rupees, type Paise } from "@/domain/money";
 
 /** Sample numbers for the design preview: 18 November 2026, using the PRD §7.5 setup. */
@@ -136,7 +137,7 @@ export const SAMPLE_MONTH = {
   name: "November",
   budget: rupees(60_000),
   used: rupees(26_550),
-  daysLeft: SAMPLE_DAY.daysInMonth - SAMPLE_DAY.today,
+  daysLeft: daysLeft(SAMPLE_DAY.today, SAMPLE_DAY.daysInMonth),
 } as const;
 
 export const SAMPLE_PIGGY = {
