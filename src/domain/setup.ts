@@ -4,7 +4,8 @@
 
 import { bucketUsed } from "./budget";
 import { compareMonthKeys } from "./dates";
-import { roundDiv, roundToRupee, sumPaise, type Paise } from "./money";
+import { evaluate } from "./expression";
+import { MAX_ENTRY_PAISE, roundDiv, roundToRupee, sumPaise, type Paise } from "./money";
 import type { Bucket, ID, ISODate, Month, MonthKey, PiggyPlan, RecurringRule } from "./types";
 
 /** First-launch buckets, all at ₹0 so I fill in my own amounts. */
@@ -110,4 +111,61 @@ export function moveEntries(month: Month, fromId: ID, toId: ID, now: ISODate): M
 export function deleteBucket(month: Month, bucketId: ID): Month {
   if (month.status !== "active" || !canDeleteBucket(month, bucketId)) return month;
   return { ...month, buckets: month.buckets.filter((b) => b.id !== bucketId) };
+}
+
+/** The most a monthly budget or bucket can be: ₹1,00,00,000 (PROGRESS decision d). */
+export const MAX_BUDGET: Paise = MAX_ENTRY_PAISE;
+export const MAX_BUCKET_NAME = 24;
+
+/**
+ * Reads a keypad amount for a budget or bucket. Unlike an expense, ₹0 is allowed
+ * (empty means ₹0). Null when it can't be used: negative, too large or not a number.
+ */
+export function parseAllocation(input: string): Paise | null {
+  const result = evaluate(input);
+  if (result.ok) return result.value <= MAX_BUDGET ? result.value : null;
+  if (result.reason === "empty" || result.reason === "zero") return 0;
+  return null;
+}
+
+export type BucketProblem = "name-missing" | "name-taken" | "amount";
+
+/** What's wrong with a bucket being added or edited, if anything. */
+export function bucketProblem(
+  draft: Pick<Bucket, "id" | "name" | "allocated">,
+  others: readonly Pick<Bucket, "id" | "name">[],
+): BucketProblem | null {
+  const name = draft.name.trim();
+  if (name === "") return "name-missing";
+  const taken = others.some(
+    (b) => b.id !== draft.id && b.name.trim().toLowerCase() === name.toLowerCase(),
+  );
+  if (taken) return "name-taken";
+  if (
+    !Number.isSafeInteger(draft.allocated) ||
+    draft.allocated < 0 ||
+    draft.allocated > MAX_BUDGET
+  ) {
+    return "amount";
+  }
+  return null;
+}
+
+/** Saves an edited bucket in the current month (PRD §8.5). Past months are read-only. */
+export function updateBucket(month: Month, bucket: Bucket): Month {
+  if (month.status !== "active") return month;
+  const name = bucket.name.trim();
+  return {
+    ...month,
+    buckets: month.buckets.map((b) => (b.id === bucket.id ? { ...bucket, name } : b)),
+  };
+}
+
+/** Spend buckets first, then save buckets, each in their saved order (PRD §8.3). */
+export function bucketsForHome(buckets: readonly Bucket[]): { spend: Bucket[]; save: Bucket[] } {
+  const sorted = [...buckets].sort((a, b) => a.order - b.order);
+  return {
+    spend: sorted.filter((b) => b.kind === "spend"),
+    save: sorted.filter((b) => b.kind === "save"),
+  };
 }

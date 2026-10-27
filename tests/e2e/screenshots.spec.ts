@@ -30,13 +30,6 @@ for (const width of WIDTHS) {
       await page.screenshot({ path: `${DIR}/home-mockup-scrolled-390.png` });
     }
   });
-
-  test(`home placeholder and tab bar at ${width}`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 844 });
-    await page.goto("/#/");
-    await settle(page);
-    await page.screenshot({ path: `${DIR}/home-${width}.png` });
-  });
 }
 
 test("design preview, screen by screen at 390", async ({ page }) => {

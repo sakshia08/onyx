@@ -5,6 +5,7 @@ import {
   clampDayToMonth,
   compareMonthKeys,
   dayKeyOfDate,
+  dayInMonth,
   daysBetween,
   daysInMonth,
   daysLeft,
@@ -14,6 +15,7 @@ import {
   isoForDay,
   monthKeyOf,
   monthKeyOfDate,
+  monthName,
   monthsInclusive,
   nextDay,
   previousMonthKey,
@@ -102,5 +104,17 @@ describe("days and years", () => {
   it("whole days between dates, unaffected by daylight-saving changes", () => {
     expect(daysBetween("2026-11-01", "2026-12-06")).toBe(35);
     expect(daysBetween("2026-03-01", "2026-04-01")).toBe(31);
+  });
+});
+
+describe("today's day for a month's maths", () => {
+  it("is the real day in the month, the last day after it, and 1 before it", () => {
+    expect(dayInMonth("2026-11", new Date(2026, 10, 18))).toBe(18);
+    expect(dayInMonth("2026-11", new Date(2026, 11, 2))).toBe(30);
+    expect(dayInMonth("2026-11", new Date(2026, 9, 31))).toBe(1);
+  });
+
+  it("names months", () => {
+    expect(monthName("2026-11")).toBe("November");
   });
 });

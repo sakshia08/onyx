@@ -100,3 +100,21 @@ export function evaluate(input: string): EvaluateResult {
 export function formatExpression(input: string): string {
   return input.replace(/\+/g, " + ").replace(/-/g, " − ").trim();
 }
+
+/** An amount back into keypad text for editing: 800000 → "8000", 125050 → "1250.5". */
+export function paiseToInput(value: Paise): string {
+  if (value <= 0) return "";
+  const whole = Math.floor(value / PAISE_PER_RUPEE);
+  const rest = value % PAISE_PER_RUPEE;
+  if (rest === 0) return String(whole);
+  return `${String(whole)}.${String(rest).padStart(2, "0").replace(/0$/, "")}`;
+}
+
+/**
+ * A key press on a saved amount being edited. While `fresh` (just opened, nothing typed yet),
+ * a digit or "." replaces the amount, like typing over selected text; ⌫ and + / − edit it.
+ */
+export function applyKeyToSaved(input: string, key: KeypadKey, fresh: boolean): string {
+  const replaces = fresh && key !== "back" && key !== "+" && key !== "-";
+  return applyKey(replaces ? "" : input, key);
+}

@@ -131,3 +131,19 @@ function ymd(day: DayKey): [number, number, number] {
   const [y, m, d] = day.split("-").map(Number) as [number, number, number];
   return [y, m - 1, d];
 }
+
+/**
+ * Today's day number for a month's maths: the real day when `now` is in that month,
+ * the last day once the month is over, and day 1 if the clock is earlier than the month.
+ */
+export function dayInMonth(key: MonthKey, now: Date): number {
+  const order = compareMonthKeys(monthKeyOfDate(now), key);
+  if (order > 0) return daysInMonth(key);
+  if (order < 0) return 1;
+  return now.getDate();
+}
+
+/** "November" for "2026-11". */
+export function monthName(key: MonthKey): string {
+  return format(parse(key, MONTH_FORMAT, new Date(0)), "MMMM");
+}

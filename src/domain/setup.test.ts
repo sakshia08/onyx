@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { rupees } from "./money";
 import {
   averageUsed,
+  bucketProblem,
+  bucketsForHome,
+  parseAllocation,
+  updateBucket,
   canDeleteBucket,
   committedRecurring,
   defaultBuckets,
@@ -133,5 +137,54 @@ describe("PRD §13: deleting a bucket that has entries", () => {
   it("past months are read-only", () => {
     const closed = { ...month, status: "closed" as const };
     expect(moveEntries(closed, "leisure", "food", NOW)).toBe(closed);
+  });
+});
+
+describe("editing buckets (PRD §8.5)", () => {
+  it("reads keypad amounts for allocations, where ₹0 is allowed", () => {
+    expect(parseAllocation("")).toBe(0);
+    expect(parseAllocation("0")).toBe(0);
+    expect(parseAllocation("8000")).toBe(rupees(8_000));
+    expect(parseAllocation("5000+3000")).toBe(rupees(8_000));
+    expect(parseAllocation("100-200")).toBeNull();
+    expect(parseAllocation("10000001")).toBeNull();
+  });
+
+  it("needs a name that isn't already used (any capitals)", () => {
+    const others = november().buckets;
+    expect(bucketProblem({ id: "new", name: "  ", allocated: 0 }, others)).toBe("name-missing");
+    expect(bucketProblem({ id: "new", name: "food", allocated: 0 }, others)).toBe("name-taken");
+    expect(bucketProblem({ id: "food", name: "Food", allocated: 0 }, others)).toBeNull();
+    expect(bucketProblem({ id: "new", name: "Pets", allocated: -1 }, others)).toBe("amount");
+    expect(bucketProblem({ id: "new", name: "Pets", allocated: rupees(500) }, others)).toBeNull();
+  });
+
+  it("saves changes in the current month only, trimming the name", () => {
+    const month = november();
+    const food = month.buckets[1];
+    if (food === undefined) throw new Error("fixture");
+    const edited = updateBucket(month, {
+      ...food,
+      name: " Eating out ",
+      allocated: rupees(9_000),
+      kind: "save",
+    });
+    expect(edited.buckets[1]).toMatchObject({
+      id: "food",
+      name: "Eating out",
+      allocated: rupees(9_000),
+      kind: "save",
+    });
+    const closed = { ...month, status: "closed" as const };
+    expect(updateBucket(closed, { ...food, name: "X" })).toBe(closed);
+  });
+
+  it("orders Home's buckets: spend first, then save, each by their order", () => {
+    const shuffled = [...BUCKETS]
+      .reverse()
+      .map((b, i) => (b.id === "food" ? { ...b, order: 99 } : { ...b, order: i }));
+    const { spend, save } = bucketsForHome(shuffled);
+    expect(spend.map((b) => b.id)).toEqual(["leisure", "commute", "food"]);
+    expect(save.map((b) => b.id)).toEqual(["saving", "investing"]);
   });
 });

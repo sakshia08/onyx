@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **Phase 1 done** (waiting for the user's go-ahead to start Phase 2). Liquid design approved. Domain logic and the saved store are built and tested: 158 tests passing.
+**Current status:** **Phase 2 done** (waiting for the user's go-ahead to start Phase 3). 175 unit tests and 22 Playwright tests passing.
 
 ## Checklist (PRD §14)
 
@@ -30,11 +30,12 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - §13 edge cases left for their screens: "recap within a minute of midnight" (Phase 6 timer; the month check itself is tested) and "saving fails" toast (wired up; tested at the storage level).
 
 ### Phase 2: Monthly setup and Home
-- [ ] First launch (welcome, name)
-- [ ] Monthly setup flow (budget, buckets)
-- [ ] Home: hero, buckets grid, recent
-- [ ] Bucket detail
-- [ ] Edit bucket
+- [x] First launch (welcome, name). Install guide and `navigator.storage.persist()` are Phase 4.
+- [x] Monthly setup flow: budget (with the "rest of October" note on a mid-month first launch, and "Same as last month" once there is a last month), buckets (add, edit, delete, drag to reorder, emoji, color, kind), unallocated / over-allocated footer, Start.
+- [x] Home: greeting, month tank, Spend and Save vials, Recent (with an empty state). Quick log is Phase 3; Due now and Coming up Phase 6; Piggy peek Phase 5; the eye (blur) Phase 8.
+- [x] Bucket detail: tank in the bucket's color with pace notch and status pill, pace in words, upcoming recurring, entries by day with day totals.
+- [x] Edit bucket (sheet): name, emoji, color, kind, amount; delete only when empty, otherwise move entries first.
+- [x] Playwright: the core first-launch loop (welcome → setup → Home → reload keeps data), over-allocation, bucket detail, edit and move-then-delete. Dev-only `/#/dev/seed` fills a sample month for screenshots until Quick add exists.
 
 ### Phase 3: Quick add
 - [ ] Keypad with math (safe parser)
@@ -68,6 +69,7 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [ ] Empty state (sleeping pig)
 
 ### Phase 6: Recurring, rollover and recap
+- Note: setup is currently only reachable before the first month (`RequireNoMonth` in `src/app/gates.tsx`). Rollover must open setup for the new month after the recap.
 - [ ] Recurring rules (§8.7): auto and ask-first, Due now, Coming up
 - [ ] Month rollover (§8.8)
 - [ ] Recap stories
@@ -108,13 +110,18 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **tailwind-merge** is taught our token names in `src/lib/cn.ts` (otherwise it drops sizes like `text-display`). A test guards this.
 - **Tailwind defaults switched off** (colors, text sizes, radii, shadows), so only design tokens can be used.
 - **Design direction "Liquid":** the first design copied the inspo too closely; the user picked "Liquid" from three concepts (Liquid, Ledger, Dial). PRD §8.3, §9 and §10 updated. Tokens: `--accent-a/b/c` replaced by `--liquid` and `--accent`; new `text-hero`, `rounded-tank`, `rounded-vial`.
+- **Typing over a saved amount:** when an amount is already set (editing a bucket, going back to the budget), it shows highlighted and the first digit replaces it, like selected text; ⌫ and + / − edit it instead.
+- **Bucket names** must be unique in a month (ignoring capitals), up to 24 characters.
+- **Emoji picker:** 36 common emoji plus a field for any emoji from the iOS keyboard. No library.
+- **Edit bucket is a sheet**, opened from bucket detail (same editor as setup).
+- **Day totals:** spent shows as −₹, a day with more money back as +₹ (PRD §17 answer 10).
 - **Opening balance counts as start-of-month money** for piggy suggestions, like leftover moves (PRD §7.4 only named leftovers). Otherwise "Already saved ₹X" wouldn't lower the monthly suggestion.
 - **Days left includes today** (PRD §7.1): 18 of 30 November is 13 days left. The design samples now use the domain function.
 - **Saved store never overwrites data it couldn't load:** writes are blocked until saved data has loaded and passed the zod check. Newer-version or damaged data shows a calm screen ("Nothing has been changed or deleted") and stays untouched. Before an upgrade, the raw old data is copied to `onyx-before-upgrade`; the restore safety copy lives under `onyx-safety-copy`, outside AppState (PRD §11).
 - **Save status lives in its own small store**, so reporting a failed save can never trigger another save.
 - **Heads-ups:** if one entry jumps past both 80% and 100%, only the 100% toast shows, and both are recorded.
 - **Yearly piggy cycles** skip ahead several years if the app wasn't opened; a 29 Feb target lands on 28 Feb in non-leap years.
-- **Bundle:** 201 KB gzipped (budget 250); zod added ~35 KB. `zod/mini` is an option later if size gets tight.
+- **Bundle:** 231 KB gzipped after Phase 2 (budget 250). Plan for Phase 4: lazy-load the welcome/setup screens so everyday launches load less. Was 201 KB after Phase 1; zod added ~35 KB. `zod/mini` is an option later if size gets tight.
 - **Save bucket over plan:** big number shows "+₹1,000" in normal white, with "extra put away" (user confirmed).
 - **Status-bar fade:** a soft gradient under the status bar so scrolled content doesn't clash with the clock.
 - **Toast** is near-solid (`surface-2` at 95% + blur), not glass, so its text stays readable over busy content.
@@ -146,4 +153,4 @@ Small details, parked until the phase that needs them. Until then, use the defau
 
 ## Ideas for later
 
-_None yet._
+- **Add a bucket mid-month** from Home or bucket detail. The PRD only adds buckets in setup; right now a new bucket waits for next month's setup.

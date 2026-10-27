@@ -112,6 +112,8 @@ export function BucketVial({
 
 function subLine(status: ReturnType<typeof bucketStatus>, allocated: Paise): React.ReactNode {
   if (status.kind === "spend") {
+    // PRD §13: a ₹0 bucket says so
+    if (allocated === 0 && status.state !== "over") return "₹0 budget";
     const value = status.state === "over" ? -status.remaining : allocated;
     return (
       <>

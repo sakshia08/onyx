@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { applyKey, evaluate, formatExpression, parseNumber, type KeypadKey } from "./expression";
+import {
+  applyKey,
+  applyKeyToSaved,
+  evaluate,
+  formatExpression,
+  paiseToInput,
+  parseNumber,
+  type KeypadKey,
+} from "./expression";
 import { MAX_ENTRY_PAISE, rupees } from "./money";
 
 function type(keys: string): string {
@@ -79,5 +87,30 @@ describe("keypad typing rules", () => {
   it("never evaluates code", () => {
     expect(evaluate("alert(1)")).toEqual({ ok: false, reason: "invalid" });
     expect(evaluate("1e5")).toEqual({ ok: false, reason: "invalid" });
+  });
+});
+
+describe("editing a saved amount", () => {
+  it("turns paise back into keypad text that evaluates to the same amount", () => {
+    expect(paiseToInput(0)).toBe("");
+    expect(paiseToInput(rupees(8_000))).toBe("8000");
+    expect(paiseToInput(rupees(1_250) + 50)).toBe("1250.5");
+    expect(paiseToInput(rupees(1_250) + 5)).toBe("1250.05");
+    for (const p of [1, 99, 100, 12345, rupees(60_000) + 37]) {
+      expect(evaluate(paiseToInput(p))).toMatchObject({ ok: true, value: p });
+    }
+  });
+});
+
+describe("typing over a saved amount", () => {
+  it("replaces it with the first digit, like selected text", () => {
+    expect(applyKeyToSaved("25000", "4", true)).toBe("4");
+    expect(applyKeyToSaved("25000", ".", true)).toBe("0.");
+  });
+
+  it("edits it with ⌫ or + / −, and appends once typing has started", () => {
+    expect(applyKeyToSaved("25000", "back", true)).toBe("2500");
+    expect(applyKeyToSaved("25000", "+", true)).toBe("25000+");
+    expect(applyKeyToSaved("4", "0", false)).toBe("40");
   });
 });

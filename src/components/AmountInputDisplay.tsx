@@ -4,11 +4,17 @@ import { Amount } from "./Amount";
 
 interface AmountInputDisplayProps {
   input: string;
+  /** A saved amount shown highlighted: the first digit typed replaces it. */
+  selected?: boolean;
   className?: string;
 }
 
 /** The big amount above the keypad: "250 + 180" small, "₹430" large (PRD §8.4). */
-export function AmountInputDisplay({ input, className }: AmountInputDisplayProps) {
+export function AmountInputDisplay({
+  input,
+  selected = false,
+  className,
+}: AmountInputDisplayProps) {
   const result = evaluate(input);
   const showExpression = result.ok && result.hasOperator;
   return (
@@ -17,7 +23,11 @@ export function AmountInputDisplay({ input, className }: AmountInputDisplayProps
         {formatExpression(input)}
       </span>
       {result.ok ? (
-        <Amount value={result.value} size="display" className="mt-1" />
+        <Amount
+          value={result.value}
+          size="display"
+          className={cn("mt-1 rounded-inner px-2", selected && "bg-accent/25")}
+        />
       ) : (
         <span className="mt-1 inline-flex items-baseline text-display text-text-3">
           <span className="mr-[0.06em] text-[0.55em] font-medium">₹</span>

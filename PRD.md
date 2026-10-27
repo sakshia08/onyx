@@ -278,7 +278,8 @@ Opened as a bottom sheet from the floating + button, or from a bucket card.
 ### 8.5 Entries, bucket detail and editing
 
 - **Bucket detail:**
-  - A header with the emoji, name and remaining amount (large), plus allocated, used, pace text, the progress bar with its pace tick, and upcoming recurring items.
+  - A header with the emoji and name, then the bucket as a large tank in its color (Liquid, §10.1): the remaining amount (large), a status pill (On pace, Ahead of pace, Over, ₹0 budget; for save buckets: Save, All put away, Goal met), "₹5,200 used of ₹8,000", and the pace notch on the tank's edge in place of a progress bar.
+  - Below it: the pace in words, as percentages only ("On pace: 65% used, with 60% of November gone"), and upcoming recurring items.
   - Below it, entries newest first, grouped by day ("Today", "Yesterday", "Mon 16 Nov"), with a total for each day.
 - **Edit bucket** (current month only):
   - Change the name, emoji, color, kind or allocated amount.
@@ -850,3 +851,4 @@ Wait for my go-ahead before starting the next phase.
 7. **`--text-3`** changed to `#83838D` for AA contrast (§10.2).
 8. **Public repo:** the GitHub repo is public (was private). `design/inspo/` is git-ignored because those are other people's designs (§12).
 9. **Design direction "Liquid"** (chosen from three concepts after the first design looked too close to the inspo): month tank, bucket vials, liquid fills everywhere, new tab bar. Replaces the aurora hero card and the 2-column bucket grid (§8.3, §9, §10).
+10. **Bucket detail uses a tank** in the bucket's color with the pace notch, instead of a progress bar, to match the Liquid direction (§8.5). Day totals follow the entry rule: spent shows as −₹, a day with more money back than spent as +₹.
