@@ -146,3 +146,14 @@
     }
   }
 }
+
+/* Toasts sit above the tab bar, or at the top while a sheet is open so they never cover it */
+@layer components {
+  .toast-region {
+    bottom: calc(max(var(--safe-bottom), 16px) + var(--tab-bar-height) + 16px);
+  }
+  body:has([role="dialog"][data-state="open"]) .toast-region {
+    bottom: auto;
+    top: calc(var(--safe-top) + 8px);
+  }
+}

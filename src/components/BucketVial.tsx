@@ -4,6 +4,7 @@ import { bucketStatus, usedFraction, type BucketKind } from "@/domain/budget";
 import { spokenAmount, type Paise } from "@/domain/money";
 import { tapScale } from "@/lib/motion";
 import { cn } from "@/lib/cn";
+import { useLongPress } from "@/lib/use-long-press";
 import { Amount } from "./Amount";
 import { bucketColorVar } from "./bucket-color";
 import { LiquidFill } from "./LiquidFill";
@@ -18,6 +19,8 @@ interface BucketVialProps {
   today: number;
   daysInMonth: number;
   onClick?: () => void;
+  /** Press and hold: Quick add with this bucket chosen (PRD §8.3). */
+  onLongPress?: () => void;
   className?: string;
 }
 
@@ -36,8 +39,10 @@ export function BucketVial({
   today,
   daysInMonth,
   onClick,
+  onLongPress,
   className,
 }: BucketVialProps) {
+  const longPress = useLongPress(onLongPress);
   const status = bucketStatus(kind, allocated, used, today, daysInMonth);
   const over = status.kind === "spend" && status.state === "over";
   const ahead = status.kind === "spend" && status.state === "ahead";
@@ -50,9 +55,12 @@ export function BucketVial({
     <motion.button
       type="button"
       whileTap={tapScale}
-      onClick={onClick}
+      {...longPress.handlers}
+      onClick={() => {
+        if (!longPress.wasLongPress()) onClick?.();
+      }}
       className={cn(
-        "relative h-[184px] w-full min-w-0 overflow-hidden rounded-vial border bg-surface-1 text-left",
+        "relative h-[184px] select-none [-webkit-touch-callout:none] w-full min-w-0 overflow-hidden rounded-vial border bg-surface-1 text-left",
         over ? "border-negative/45" : "border-hairline",
         className,
       )}

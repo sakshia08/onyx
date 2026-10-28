@@ -73,10 +73,10 @@ export function Keypad({ onKey, onSubmit, canSubmit, className }: KeypadProps) {
             onClick={() => {
               onKey(cell.key);
             }}
-            whileTap={{ scale: 0.94, backgroundColor: "var(--surface-3)" }}
+            whileTap={{ scale: 0.94 }}
             transition={{ duration: 0.12 }}
             className={cn(
-              "grid h-14 place-items-center rounded-inner bg-surface-2/60 text-title font-normal",
+              "grid h-14 place-items-center rounded-inner bg-surface-2/60 text-title font-normal transition-colors active:bg-surface-3",
               cell.tone === "operator" ? "text-text-2" : "text-text-1",
             )}
           >

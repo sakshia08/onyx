@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Screen } from "@/app/Screen";
 import { BucketVial } from "@/components/BucketVial";
 import { MonthTank } from "@/components/MonthTank";
@@ -13,6 +13,8 @@ import type { Bucket, Month } from "@/domain/types";
 import { useActiveMonth, useNow } from "@/store/hooks";
 import { useAppStore } from "@/store";
 import { BucketEntryRow } from "../entries/EntryList";
+import { useQuickAdd } from "../quick-add/quick-add-context";
+import { QuickLogRow } from "./QuickLogRow";
 import { RecentEmpty } from "./RecentEmpty";
 
 /** Home (PRD §8.3): greeting, the month tank, bucket vials and recent entries. */
@@ -43,10 +45,27 @@ export function HomeScreen() {
         daysLeft={daysLeft(today, days)}
       />
 
+      <QuickLogRow month={month} />
+
       <VialGroup title="Spend" buckets={spend} month={month} today={today} days={days} />
       <VialGroup title="Save" buckets={save} month={month} today={today} days={days} />
 
-      <SectionHeader title="Recent" className="mt-section" />
+      <SectionHeader
+        title="Recent"
+        className="mt-section"
+        {...(recent.length > 0
+          ? {
+              trailing: (
+                <Link
+                  to="/activity"
+                  className="inline-flex min-h-11 items-center text-callout text-text-2"
+                >
+                  See all
+                </Link>
+              ),
+            }
+          : {})}
+      />
       {recent.length === 0 ? (
         <RecentEmpty />
       ) : (
@@ -78,6 +97,7 @@ function VialGroup({
   days: number;
 }) {
   const navigate = useNavigate();
+  const quickAdd = useQuickAdd();
   if (buckets.length === 0) return null;
   return (
     <section aria-label={`${title} buckets`}>
@@ -96,6 +116,9 @@ function VialGroup({
             daysInMonth={days}
             onClick={() => {
               void navigate(`/bucket/${b.id}`);
+            }}
+            onLongPress={() => {
+              quickAdd.openAdd(b.id);
             }}
           />
         ))}

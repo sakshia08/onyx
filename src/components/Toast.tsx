@@ -16,19 +16,28 @@ interface ActiveToast extends ToastOptions {
   id: number;
 }
 
-/** Shows one toast at a time, above the tab bar (PRD §10.5 Toast with Undo). */
+/**
+ * Shows one toast at a time, above the tab bar (PRD §10.5 Toast with Undo).
+ * `show` replaces whatever is showing; `queue` waits its turn.
+ */
 export function ToastProvider({ children }: { children: React.ReactNode }) {
-  const [toast, setToast] = useState<ActiveToast | null>(null);
+  // The first toast is showing; the rest are waiting their turn
+  const [toasts, setToasts] = useState<ActiveToast[]>([]);
+  const toast = toasts[0] ?? null;
   const nextId = useRef(1);
   const reduceMotion = useReducedMotion() ?? false;
 
   const dismiss = useCallback(() => {
-    setToast(null);
+    setToasts((list) => list.slice(1));
   }, []);
   const show = useCallback((options: ToastOptions) => {
-    setToast({ ...options, id: nextId.current++ });
+    setToasts([{ ...options, id: nextId.current++ }]);
   }, []);
-  const api = useMemo<ToastApi>(() => ({ show, dismiss }), [show, dismiss]);
+  const queue = useCallback((options: ToastOptions) => {
+    const next = { ...options, id: nextId.current++ };
+    setToasts((list) => [...list, next]);
+  }, []);
+  const api = useMemo<ToastApi>(() => ({ show, queue, dismiss }), [show, queue, dismiss]);
 
   useEffect(() => {
     if (!toast) return;
@@ -45,10 +54,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 z-60 flex justify-center px-screen"
-        style={{ bottom: "calc(max(var(--safe-bottom), 16px) + var(--tab-bar-height) + 16px)" }}
+        className="toast-region pointer-events-none fixed inset-x-0 z-60 flex justify-center px-screen"
       >
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {toast && (
             <motion.div
               key={toast.id}

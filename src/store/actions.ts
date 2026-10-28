@@ -11,7 +11,16 @@ import {
   type MonthPlan,
   type StartMonthResult,
 } from "@/domain/setup";
-import type { AppState, Bucket, ID, Month, MonthKey } from "@/domain/types";
+import {
+  addEntry,
+  removeEntry,
+  replaceEntry,
+  restoreEntry,
+  type HeadsUpToast,
+} from "@/domain/entries";
+import { favoriteFromEntry } from "@/domain/favorites";
+import type { AppState, Bucket, Entry, ID, Month, MonthKey } from "@/domain/types";
+import { newId } from "@/lib/id";
 import { appStore } from "./index";
 
 function updateMonth(data: AppState, key: MonthKey, change: (m: Month) => Month): AppState {
@@ -59,4 +68,96 @@ export function moveEntriesAndDelete(key: MonthKey, fromId: ID, toId: ID, now = 
         deleteBucketRule(moveEntries(m, fromId, toId, toISODate(now)), fromId),
       ),
     );
+}
+
+// ── Entries (PRD §8.4, §8.5) ──────────────────────────────────────────────
+
+function activeKey(): MonthKey | null {
+  return appStore.getState().data.activeMonthKey;
+}
+
+/** Logs an entry in the active month. Returns any heads-up that just became due. */
+export function logEntry(entry: Entry): HeadsUpToast | null {
+  const key = activeKey();
+  if (key === null) return null;
+  let headsUp: HeadsUpToast | null = null;
+  appStore.getState().update((d) =>
+    updateMonth(d, key, (m) => {
+      const result = addEntry(m, entry);
+      headsUp = result.headsUp;
+      return result.month;
+    }),
+  );
+  return headsUp;
+}
+
+export function editEntry(entry: Entry, now = new Date()): HeadsUpToast | null {
+  const key = activeKey();
+  if (key === null) return null;
+  let headsUp: HeadsUpToast | null = null;
+  appStore.getState().update((d) =>
+    updateMonth(d, key, (m) => {
+      const result = replaceEntry(m, entry, toISODate(now));
+      headsUp = result.headsUp;
+      return result.month;
+    }),
+  );
+  return headsUp;
+}
+
+/** Deletes an entry and returns it, so it can be put back with Undo. */
+export function deleteEntry(id: ID): Entry | null {
+  const key = activeKey();
+  if (key === null) return null;
+  let removed: Entry | null = null;
+  appStore.getState().update((d) =>
+    updateMonth(d, key, (m) => {
+      const result = removeEntry(m, id);
+      removed = result.removed;
+      return result.month;
+    }),
+  );
+  return removed;
+}
+
+/** Undo for a delete or an edit: the entry goes back exactly as it was. */
+export function putBackEntry(entry: Entry): void {
+  const key = activeKey();
+  if (key === null) return;
+  appStore.getState().update((d) => updateMonth(d, key, (m) => restoreEntry(m, entry)));
+}
+
+// ── Favorites (PRD §8.4) ─────────────────────────────────────────────────
+
+export function addFavorite(
+  entry: Pick<Entry, "note" | "amount" | "bucketId">,
+  emoji?: string,
+): void {
+  appStore.getState().update((d) => ({
+    ...d,
+    favorites: [
+      ...d.favorites,
+      favoriteFromEntry(
+        entry,
+        emoji,
+        newId(),
+        Math.max(-1, ...d.favorites.map((f) => f.order)) + 1,
+      ),
+    ],
+  }));
+}
+
+/** "Save as favorite?" is asked once per note, amount and bucket. */
+export function rememberFavoriteAsked(key: string): void {
+  appStore.getState().update((d) =>
+    d.meta.dismissedFavoriteSuggestions.includes(key)
+      ? d
+      : {
+          ...d,
+          meta: {
+            ...d.meta,
+            dismissedFavoriteSuggestions: [...d.meta.dismissedFavoriteSuggestions, key],
+          },
+        },
+  );
 }

@@ -3,9 +3,11 @@ import { EntryRow } from "@/components/EntryRow";
 import { entryTime, type DayGroup } from "@/domain/activity";
 import { spokenAmount } from "@/domain/money";
 import type { Bucket, Entry } from "@/domain/types";
+import { useQuickAdd } from "../quick-add/quick-add-context";
 
 /** An entry as a row: the note (or bucket name), "13:42 · Food", and the amount (PRD §8.5). */
 export function BucketEntryRow({ entry, bucket }: { entry: Entry; bucket: Bucket | undefined }) {
+  const quickAdd = useQuickAdd();
   const name = bucket?.name ?? "Unknown bucket";
   const note = entry.note?.trim();
   const detail = [entryTime(entry), name, entry.type === "refund" ? "Money back" : null]
@@ -19,6 +21,9 @@ export function BucketEntryRow({ entry, bucket }: { entry: Entry; bucket: Bucket
       detail={detail}
       amount={entry.amount}
       type={entry.type}
+      onClick={() => {
+        quickAdd.openEdit(entry);
+      }}
     />
   );
 }

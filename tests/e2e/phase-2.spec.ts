@@ -186,7 +186,9 @@ test("edit a bucket, and move its entries before deleting it, at 390", async ({ 
   await typeAmount(page, "3000"); // types over the saved ₹2,000
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByRole("region", { name: "Leisure this month" })).toContainText("500");
-  await expect(page.getByRole("region", { name: "Leisure this month" })).toContainText("Ahead of pace");
+  await expect(page.getByRole("region", { name: "Leisure this month" })).toContainText(
+    "Ahead of pace",
+  );
 
   // Delete: it has entries, so they must move first
   await page.getByRole("button", { name: "Edit" }).click();

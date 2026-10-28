@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **Phase 2 done** (waiting for the user's go-ahead to start Phase 3). 175 unit tests and 22 Playwright tests passing.
+**Current status:** **Phase 3 done** (waiting for the user's go-ahead to start Phase 4). 193 unit tests and 31 Playwright tests passing.
 
 ## Checklist (PRD §14)
 
@@ -38,15 +38,17 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] Playwright: the core first-launch loop (welcome → setup → Home → reload keeps data), over-allocation, bucket detail, edit and move-then-delete. Dev-only `/#/dev/seed` fills a sample month for screenshots until Quick add exists.
 
 ### Phase 3: Quick add
-- [ ] Keypad with math (safe parser)
-- [ ] Destination chips
-- [ ] Note suggestions
-- [ ] Favorites (and "Save as favorite?" suggestion)
-- [ ] Money back
-- [ ] Date picker
-- [ ] Edit and delete with undo
-- [ ] Heads-ups at 80% and 100%
-- [ ] Activity list
+- [x] Keypad with math (safe parser): "250 + 180" shows small, ₹430 large; saved amounts type over
+- [x] Destination chips: buckets (spend then save). Piggy destinations come with piggies in Phase 5.
+- [x] Note suggestions (up to 3; picking one chooses its usual bucket)
+- [x] Favorites: "Save as favorite?" after 3 times in 30 days (asked once), one-tap row in Quick add and on Home. Managing favorites is Settings, Phase 8.
+- [x] Money back
+- [x] Date picker (1st of the month to today)
+- [x] Edit and delete, each with Undo
+- [x] Heads-ups at 80% and 100% (once per bucket per month, also after edits)
+- [x] Activity list with bucket filters ("See all" on Home). Piggy stashes and spends join it in Phase 5.
+- [x] Long-press a vial: Quick add with that bucket; + on a bucket's page preselects it too
+- [x] Playwright: core loop (log → see what's left → Undo), heads-up, money back, back-dating, suggestions, edit/delete with Undo, favorites, long-press, activity
 
 ### Phase 4: PWA and first install on iPhone
 - [ ] Manifest, icons and launch images
@@ -110,6 +112,11 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **tailwind-merge** is taught our token names in `src/lib/cn.ts` (otherwise it drops sizes like `text-display`). A test guards this.
 - **Tailwind defaults switched off** (colors, text sizes, radii, shadows), so only design tokens can be used.
 - **Design direction "Liquid":** the first design copied the inspo too closely; the user picked "Liquid" from three concepts (Liquid, Ledger, Dial). PRD §8.3, §9 and §10 updated. Tokens: `--accent-a/b/c` replaced by `--liquid` and `--accent`; new `text-hero`, `rounded-tank`, `rounded-vial`.
+- **Heads-ups ride on the "logged" toast** ("₹1,200 logged to Food. 80% of Food used.", amber icon) so Undo is never lost behind a second toast.
+- **"Save as favorite?" is asked once**: showing it counts as asking, whether or not Save is tapped. It waits until the Undo toast has gone.
+- **Toasts move to the top** of the screen while a sheet is open, so they never cover the keypad.
+- **The keypad never hides** while typing a note: the sheet sits above the iOS keyboard and scrolls instead. Swapping the keypad for a button made the layout jump and swallowed taps.
+- **A short ✓ (320 ms)** shows when saving, then the sheet closes (PRD §8.4 success animation).
 - **Typing over a saved amount:** when an amount is already set (editing a bucket, going back to the budget), it shows highlighted and the first digit replaces it, like selected text; ⌫ and + / − edit it instead.
 - **Bucket names** must be unique in a month (ignoring capitals), up to 24 characters.
 - **Emoji picker:** 36 common emoji plus a field for any emoji from the iOS keyboard. No library.
@@ -121,7 +128,7 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **Save status lives in its own small store**, so reporting a failed save can never trigger another save.
 - **Heads-ups:** if one entry jumps past both 80% and 100%, only the 100% toast shows, and both are recorded.
 - **Yearly piggy cycles** skip ahead several years if the app wasn't opened; a 29 Feb target lands on 28 Feb in non-leap years.
-- **Bundle:** 231 KB gzipped after Phase 2 (budget 250). Plan for Phase 4: lazy-load the welcome/setup screens so everyday launches load less. Was 201 KB after Phase 1; zod added ~35 KB. `zod/mini` is an option later if size gets tight.
+- **Bundle:** 236 KB gzipped after Phase 3 (231 after Phase 2; budget 250). Plan for Phase 4: lazy-load the welcome/setup screens so everyday launches load less. Was 201 KB after Phase 1; zod added ~35 KB. `zod/mini` is an option later if size gets tight.
 - **Save bucket over plan:** big number shows "+₹1,000" in normal white, with "extra put away" (user confirmed).
 - **Status-bar fade:** a soft gradient under the status bar so scrolled content doesn't clash with the clock.
 - **Toast** is near-solid (`surface-2` at 95% + blur), not glass, so its text stays readable over busy content.

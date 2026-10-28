@@ -1,4 +1,5 @@
 import { createHashRouter, type RouteObject } from "react-router";
+import { ActivityScreen } from "@/features/activity/ActivityScreen";
 import { BucketDetail } from "@/features/buckets/BucketDetail";
 import { HomeScreen } from "@/features/home/HomeScreen";
 import { Welcome } from "@/features/onboarding/Welcome";
@@ -59,6 +60,7 @@ export const router = createHashRouter([
     children: [
       { index: true, element: <HomeScreen /> },
       { path: "bucket/:id", element: <BucketDetail /> },
+      { path: "activity", element: <ActivityScreen /> },
       { path: "insights", element: <PlaceholderScreen title="Insights" phase={7} /> },
       { path: "piggy", element: <PlaceholderScreen title="Piggy" phase={5} glow="piggy" /> },
       { path: "settings", element: <PlaceholderScreen title="Settings" phase={8} /> },

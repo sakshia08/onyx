@@ -44,7 +44,7 @@ export function TabBar({ onAdd }: TabBarProps) {
 }
 
 /** Home stays active inside its own screens, like bucket detail. */
-const HOME_PATHS = /^\/(bucket\/.*)?$/;
+const HOME_PATHS = /^\/(bucket\/.*|activity)?$/;
 
 function TabLink({ to, label, Icon }: { to: string; label: string; Icon: TabIcon }) {
   const { pathname } = useLocation();

@@ -10,7 +10,10 @@ export interface ToastOptions {
 }
 
 export interface ToastApi {
+  /** Shows now, replacing any toast (and anything waiting). */
   show: (options: ToastOptions) => void;
+  /** Shows after the current toast is gone. */
+  queue: (options: ToastOptions) => void;
   dismiss: () => void;
 }
 
