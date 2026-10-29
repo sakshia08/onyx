@@ -1,9 +1,6 @@
 import { createHashRouter, type RouteObject } from "react-router";
-import { ActivityScreen } from "@/features/activity/ActivityScreen";
-import { BucketDetail } from "@/features/buckets/BucketDetail";
 import { HomeScreen } from "@/features/home/HomeScreen";
-import { Welcome } from "@/features/onboarding/Welcome";
-import { SetupFlow } from "@/features/setup/SetupFlow";
+import { ActivityScreen, BucketDetail, Lazy, SetupFlow, Welcome } from "./lazy-screens";
 import { AppShell } from "./AppShell";
 import { RequireMonth, RequireNoMonth } from "./gates";
 import { PlaceholderScreen } from "./PlaceholderScreen";
@@ -38,7 +35,9 @@ export const router = createHashRouter([
     path: "/welcome",
     element: (
       <RequireNoMonth>
-        <Welcome />
+        <Lazy>
+          <Welcome />
+        </Lazy>
       </RequireNoMonth>
     ),
   },
@@ -46,7 +45,9 @@ export const router = createHashRouter([
     path: "/setup",
     element: (
       <RequireNoMonth>
-        <SetupFlow />
+        <Lazy>
+          <SetupFlow />
+        </Lazy>
       </RequireNoMonth>
     ),
   },
@@ -59,8 +60,22 @@ export const router = createHashRouter([
     ),
     children: [
       { index: true, element: <HomeScreen /> },
-      { path: "bucket/:id", element: <BucketDetail /> },
-      { path: "activity", element: <ActivityScreen /> },
+      {
+        path: "bucket/:id",
+        element: (
+          <Lazy>
+            <BucketDetail />
+          </Lazy>
+        ),
+      },
+      {
+        path: "activity",
+        element: (
+          <Lazy>
+            <ActivityScreen />
+          </Lazy>
+        ),
+      },
       { path: "insights", element: <PlaceholderScreen title="Insights" phase={7} /> },
       { path: "piggy", element: <PlaceholderScreen title="Piggy" phase={5} glow="piggy" /> },
       { path: "settings", element: <PlaceholderScreen title="Settings" phase={8} /> },

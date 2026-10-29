@@ -10,6 +10,8 @@ export const WIDTHS = [375, 390, 430] as const;
  */
 export async function simulateIPhone(page: Page): Promise<void> {
   await page.addInitScript(() => {
+    // Behave like the installed Home Screen app, so the Safari install guide stays out of the way
+    Object.defineProperty(navigator, "standalone", { value: true, configurable: true });
     const apply = () => {
       const root = document.documentElement;
       root.style.setProperty("--safe-top", "59px");

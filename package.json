@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:pwa": "playwright test --config playwright.pwa.config.ts",
     "screenshots": "playwright test tests/e2e/screenshots.spec.ts"
   },
   "dependencies": {

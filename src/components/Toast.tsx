@@ -40,7 +40,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const api = useMemo<ToastApi>(() => ({ show, queue, dismiss }), [show, queue, dismiss]);
 
   useEffect(() => {
-    if (!toast) return;
+    if (!toast || toast.duration === Infinity) return;
     const timer = window.setTimeout(dismiss, toast.duration ?? 5000);
     return () => {
       window.clearTimeout(timer);

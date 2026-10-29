@@ -5,7 +5,7 @@ export interface ToastOptions {
   /** e.g. { label: "Undo", onAction: () => … } */
   action?: { label: string; onAction: () => void };
   tone?: "success" | "info" | "warning" | "error";
-  /** Milliseconds. Default 5000 (PRD §8.4: Undo for 5 seconds). */
+  /** Milliseconds. Default 5000 (PRD §8.4: Undo for 5 seconds). Infinity stays until tapped. */
   duration?: number;
 }
 

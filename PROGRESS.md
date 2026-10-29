@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **Phase 3 done** (waiting for the user's go-ahead to start Phase 4). 193 unit tests and 31 Playwright tests passing.
+**Current status:** **Phase 4 built**; waiting for the user to deploy to Vercel and test on the iPhone. Then Phase 4 is done. 193 unit, 31 screen and 5 PWA tests passing.
 
 ## Checklist (PRD §14)
 
@@ -51,12 +51,15 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] Playwright: core loop (log → see what's left → Undo), heads-up, money back, back-dating, suggestions, edit/delete with Undo, favorites, long-press, activity
 
 ### Phase 4: PWA and first install on iPhone
-- [ ] Manifest, icons and launch images
-- [ ] Offline support (precache everything)
-- [ ] Persistent storage request
-- [ ] Update prompt
-- [ ] Install guide (Safari only)
-- [ ] Deploy (Vercel or Netlify from the public GitHub repo) and test on the iPhone
+- [x] Manifest, icons and launch images: all generated from `public/icon.svg` (`pwa-assets.config.ts`) at build time
+- [x] Offline support: every built file is precached; page loads fall back to the cached app
+- [x] Persistent storage request (`navigator.storage.persist()` after data loads)
+- [x] Update prompt: "New version available" toast with Refresh, stays until tapped; checks hourly
+- [x] Install guide (iPhone/iPad Safari only, "Continue in browser" skips it for good)
+- [x] Less-used screens (welcome, setup, bucket detail, activity) load on demand
+- [x] `npm run test:pwa`: production-build tests (precache list, service worker control, manifest and icons, install guide, no outside requests)
+- [ ] **Deploy** to Vercel from the public GitHub repo (the user's account; steps given in chat)
+- [ ] **Test on the iPhone**: add to Home Screen, airplane mode, update prompt
 
 ### Phase 5: Piggy banks (§8.6)
 - [ ] Piggy tab hero with the pig and swipe between piggies
@@ -112,6 +115,9 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **tailwind-merge** is taught our token names in `src/lib/cn.ts` (otherwise it drops sizes like `text-display`). A test guards this.
 - **Tailwind defaults switched off** (colors, text sizes, radii, shadows), so only design tokens can be used.
 - **Design direction "Liquid":** the first design copied the inspo too closely; the user picked "Liquid" from three concepts (Liquid, Ledger, Dial). PRD §8.3, §9 and §10 updated. Tokens: `--accent-a/b/c` replaced by `--liquid` and `--accent`; new `text-hero`, `rounded-tank`, `rounded-vial`.
+- **App icon:** the pig filled with pink liquid on near-black, with a soft pink glow (`public/icon.svg`). Launch screens are black with the icon small in the middle.
+- **Offline test:** Playwright's test browsers don't keep a real cache store, so a full airplane-mode reload can't be faked. The PWA tests check the precache list and that the service worker takes control; airplane mode is checked on the iPhone.
+- **Install guide only on iPhone/iPad** (not on the laptop), and the Playwright tests pretend to be the installed app.
 - **Heads-ups ride on the "logged" toast** ("₹1,200 logged to Food. 80% of Food used.", amber icon) so Undo is never lost behind a second toast.
 - **"Save as favorite?" is asked once**: showing it counts as asking, whether or not Save is tapped. It waits until the Undo toast has gone.
 - **Toasts move to the top** of the screen while a sheet is open, so they never cover the keypad.
@@ -128,7 +134,7 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **Save status lives in its own small store**, so reporting a failed save can never trigger another save.
 - **Heads-ups:** if one entry jumps past both 80% and 100%, only the 100% toast shows, and both are recorded.
 - **Yearly piggy cycles** skip ahead several years if the app wasn't opened; a 29 Feb target lands on 28 Feb in non-leap years.
-- **Bundle:** 236 KB gzipped after Phase 3 (231 after Phase 2; budget 250). Plan for Phase 4: lazy-load the welcome/setup screens so everyday launches load less. Was 201 KB after Phase 1; zod added ~35 KB. `zod/mini` is an option later if size gets tight.
+- **Bundle:** about 231 KB gzipped at launch after Phase 4 (welcome, setup, bucket detail and activity now load on demand; budget 250). Was 201 KB after Phase 1; zod added ~35 KB. `zod/mini` is an option later if size gets tight.
 - **Save bucket over plan:** big number shows "+₹1,000" in normal white, with "extra put away" (user confirmed).
 - **Status-bar fade:** a soft gradient under the status bar so scrolled content doesn't clash with the clock.
 - **Toast** is near-solid (`surface-2` at 95% + blur), not glass, so its text stays readable over busy content.

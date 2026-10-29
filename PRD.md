@@ -835,7 +835,7 @@ Wait for my go-ahead before starting the next phase.
 
 ## 16. Open questions
 
-- The app icon (the name is decided: **Onyx**).
+- ~~The app icon~~: decided, see §17 answer 11.
 - Add a light theme later?
 - Should a forgotten expense be allowed into last month during a short grace period (e.g. the first 2 days of the new month)? v1: no.
 - Small details still to decide; see "Decisions to make later" in PROGRESS.md.
@@ -852,3 +852,4 @@ Wait for my go-ahead before starting the next phase.
 8. **Public repo:** the GitHub repo is public (was private). `design/inspo/` is git-ignored because those are other people's designs (§12).
 9. **Design direction "Liquid"** (chosen from three concepts after the first design looked too close to the inspo): month tank, bucket vials, liquid fills everywhere, new tab bar. Replaces the aurora hero card and the 2-column bucket grid (§8.3, §9, §10).
 10. **Bucket detail uses a tank** in the bucket's color with the pace notch, instead of a progress bar, to match the Liquid direction (§8.5). Day totals follow the entry rule: spent shows as −₹, a day with more money back than spent as +₹.
+11. **App icon:** the pig filled with pink liquid on near-black (`public/icon.svg`). All icon sizes and the black iOS launch screens are generated from it at build time (§12.3).

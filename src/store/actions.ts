@@ -161,3 +161,8 @@ export function rememberFavoriteAsked(key: string): void {
         },
   );
 }
+
+/** "Continue in browser" on the install guide (PRD §8.1). */
+export function dismissInstallGuide(): void {
+  appStore.getState().update((d) => ({ ...d, meta: { ...d.meta, installGuideDismissed: true } }));
+}

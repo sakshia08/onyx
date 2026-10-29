@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useToast } from "@/components/toast-context";
+import { askToKeepData } from "@/lib/device";
 import { useSaveStatus } from "@/store";
 import { LoadErrorScreen } from "./LoadErrorScreen";
 import { Splash } from "./Splash";
@@ -10,6 +11,11 @@ export function DataGate({ children }: { children: React.ReactNode }) {
   const loadError = useSaveStatus((s) => s.loadError);
   const saveFailed = useSaveStatus((s) => s.saveFailed);
   const toast = useToast();
+
+  // Once data has loaded, ask iOS to keep it (PRD §8.1)
+  useEffect(() => {
+    if (hydrated) void askToKeepData();
+  }, [hydrated]);
 
   useEffect(() => {
     if (!saveFailed) return;
