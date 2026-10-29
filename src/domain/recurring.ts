@@ -4,7 +4,7 @@
  */
 
 import { clampDayToMonth, isoForDay } from "./dates";
-import { sumPaise, type Paise } from "./money";
+import { MAX_ENTRY_PAISE, sumPaise, type Paise } from "./money";
 import type { Entry, ID, ISODate, Month, RecurringRule } from "./types";
 
 /** The day this rule lands on in the month (day 31 → the 30th, or the 28th/29th in February). */
@@ -119,4 +119,60 @@ export function missedWhenCreated(
   today: number,
 ): boolean {
   return occurrenceDay(rule, month) < today;
+}
+
+// ── Managing rules (PRD §8.7) ────────────────────────────────────────────
+
+export interface RuleDraft {
+  name: string;
+  amount: Paise;
+  bucketId: ID;
+  dayOfMonth: number;
+  mode: RecurringRule["mode"];
+  active: boolean;
+}
+
+export type RuleProblem = "name-missing" | "amount" | "bucket" | "day";
+
+export function ruleProblem(draft: RuleDraft, bucketIds: readonly ID[]): RuleProblem | null {
+  if (draft.name.trim() === "") return "name-missing";
+  if (!Number.isSafeInteger(draft.amount) || draft.amount <= 0 || draft.amount > MAX_ENTRY_PAISE) {
+    return "amount";
+  }
+  if (!bucketIds.includes(draft.bucketId)) return "bucket";
+  if (!Number.isInteger(draft.dayOfMonth) || draft.dayOfMonth < 1 || draft.dayOfMonth > 31)
+    return "day";
+  return null;
+}
+
+export function createRule(draft: RuleDraft, id: ID, now: ISODate): RecurringRule {
+  return { id, ...draft, name: draft.name.trim(), createdAt: now };
+}
+
+/** Edits a rule. Entries it already logged stay as they are. */
+export function updateRule(rule: RecurringRule, draft: RuleDraft): RecurringRule {
+  return { ...rule, ...draft, name: draft.name.trim() };
+}
+
+export interface ComingUpItem {
+  rule: RecurringRule;
+  /** The day it lands on this month. */
+  day: number;
+  state: "upcoming" | "needs-bucket";
+}
+
+/** "Coming up" on Home (PRD §8.3): still to come this month, plus rules that need a bucket. */
+export function comingUp(
+  rules: readonly RecurringRule[],
+  month: Month,
+  today: number,
+): ComingUpItem[] {
+  return rules
+    .map((rule) => ({
+      rule,
+      day: occurrenceDay(rule, month),
+      state: recurringState(rule, month, today),
+    }))
+    .filter((i): i is ComingUpItem => i.state === "upcoming" || i.state === "needs-bucket")
+    .sort((a, b) => a.day - b.day);
 }

@@ -14,6 +14,11 @@ test.beforeEach(async ({ page }) => {
 
 async function swipeLeft(page: Page, name: RegExp, distance: number) {
   const row = page.getByRole("button", { name }).first();
+  // Keep the row clear of the floating tab bar before swiping
+  await row.evaluate((el) => {
+    el.scrollIntoView({ block: "center" });
+  });
+  await page.waitForTimeout(300);
   const box = await row.boundingBox();
   if (!box) throw new Error("row not found");
   const y = box.y + box.height / 2;

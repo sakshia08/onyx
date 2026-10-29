@@ -1,13 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import {
-  dayInMonth,
-  dayKeyOfDate,
-  daysInMonth,
-  daysLeft,
-  monthKeyOfDate,
-  previousMonthKey,
-} from "@/domain/dates";
+import { dayInMonth, dayKeyOfDate, daysInMonth, daysLeft, monthKeyOfDate } from "@/domain/dates";
 import type { Paise } from "@/domain/money";
 import { defaultBuckets, planFromPrevious } from "@/domain/setup";
 import { suggestedThisMonth } from "@/domain/piggy";
@@ -26,7 +19,13 @@ export function SetupFlow() {
   const navigate = useNavigate();
   const [now] = useState(() => new Date());
   const key = monthKeyOfDate(now);
-  const previous = useAppStore((s) => s.data.months[previousMonthKey(key)]);
+  // The most recent earlier month, even if some months in between were never opened
+  const previous = useAppStore((s) =>
+    Object.values(s.data.months)
+      .filter((m) => m.key < key)
+      .sort((a, b) => (a.key < b.key ? 1 : -1))
+      .at(0),
+  );
   const isFirstMonth = useAppStore((s) => Object.keys(s.data.months).length === 0);
 
   const [step, setStep] = useState<1 | 2>(1);

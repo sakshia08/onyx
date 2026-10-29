@@ -2,7 +2,24 @@
  * Every change to saved data goes through here, built from the pure rules in src/domain.
  */
 
-import { toISODate } from "@/domain/dates";
+import { dayInMonth, monthKeyOfDate, toISODate } from "@/domain/dates";
+import { recordBackup } from "@/domain/backup";
+import {
+  createRule,
+  logRecurring,
+  recurringState,
+  runAutoRecurring,
+  skipRecurring,
+  updateRule,
+  type RuleDraft,
+} from "@/domain/recurring";
+import {
+  checkMonth,
+  closeMonth,
+  markRecapSeen,
+  moveLeftover,
+  type MonthCheck,
+} from "@/domain/rollover";
 import type { Paise } from "@/domain/money";
 import {
   deleteBucket as deleteBucketRule,
@@ -45,6 +62,7 @@ import type {
   MonthKey,
   Piggy,
   PiggyTxn,
+  RecurringRule,
 } from "@/domain/types";
 import { newId } from "@/lib/id";
 import { appStore } from "./index";
@@ -285,4 +303,116 @@ export function autoStashNow(now = new Date()): number {
   const result = runAutoStash(data.piggies, month, now);
   if (result.stashed > 0) appStore.getState().update((d) => ({ ...d, piggies: result.piggies }));
   return result.stashed;
+}
+
+// ── Month end (PRD §8.8) ─────────────────────────────────────────────────
+
+/**
+ * Checks the calendar against the active month and closes it once the month is over.
+ * Months the app was never opened in are skipped. A clock going backwards changes nothing.
+ */
+export function checkTheMonth(now = new Date()): MonthCheck {
+  const { data } = appStore.getState();
+  const result = checkMonth(data.activeMonthKey, now);
+  if (result.kind === "rollover") {
+    appStore.getState().update((d) => updateMonth(d, result.closing, (m) => closeMonth(m, now)));
+  }
+  return result;
+}
+
+/** The end of the recap: the closed month remembers it was seen, then setup opens. */
+export function finishRecap(key: MonthKey, now = new Date()): void {
+  appStore.getState().update((d) => updateMonth(d, key, (m) => markRecapSeen(m, now)));
+}
+
+/** "Stash some into a piggy?" after a month closes (PRD §8.6). */
+export function moveLeftoverToPiggy(
+  fromKey: MonthKey,
+  piggyId: ID,
+  amount: Paise,
+  now = new Date(),
+): boolean {
+  const { data } = appStore.getState();
+  const month = data.months[fromKey];
+  const piggy = data.piggies.find((p) => p.id === piggyId);
+  if (!month || !piggy) return false;
+  const moved = moveLeftover(month, data.piggies, piggy, amount, newId(), now);
+  if (moved === null) return false;
+  updatePiggyById(piggyId, () => moved);
+  return true;
+}
+
+/** Only after the share sheet completes (PRD §8.11). */
+export function backupDone(now = new Date()): void {
+  appStore.getState().update((d) => recordBackup(d, now));
+}
+
+// ── Recurring (PRD §8.7) ─────────────────────────────────────────────────
+
+function activeMonthNow(now: Date): Month | null {
+  const { data } = appStore.getState();
+  const month = data.activeMonthKey === null ? undefined : data.months[data.activeMonthKey];
+  return month && month.status === "active" && month.key === monthKeyOfDate(now) ? month : null;
+}
+
+/** Logs every due "Log automatically" rule, once. Returns what was logged. */
+export function runRecurringNow(now = new Date()): RecurringRule[] {
+  const month = activeMonthNow(now);
+  if (month === null) return [];
+  const rules = appStore.getState().data.recurring;
+  const today = dayInMonth(month.key, now);
+  const due = rules.filter((r) => r.mode === "auto" && recurringState(r, month, today) === "due");
+  if (due.length === 0) return [];
+  appStore
+    .getState()
+    .update((d) =>
+      updateMonth(d, month.key, (m) =>
+        runAutoRecurring(m, d.recurring, today, newId, toISODate(now)),
+      ),
+    );
+  return due;
+}
+
+/** "Log" on a Due now item. */
+export function logRule(ruleId: ID, now = new Date()): void {
+  const month = activeMonthNow(now);
+  const rule = appStore.getState().data.recurring.find((r) => r.id === ruleId);
+  if (month === null || !rule) return;
+  appStore
+    .getState()
+    .update((d) => updateMonth(d, month.key, (m) => logRecurring(m, rule, newId, toISODate(now))));
+}
+
+/** "Skip": stays skipped for the rest of the month. */
+export function skipRule(ruleId: ID, now = new Date()): void {
+  const month = activeMonthNow(now);
+  if (month === null) return;
+  appStore.getState().update((d) => updateMonth(d, month.key, (m) => skipRecurring(m, ruleId)));
+}
+
+export function addRule(draft: RuleDraft, now = new Date()): RecurringRule {
+  const rule = createRule(draft, newId(), toISODate(now));
+  appStore.getState().update((d) => ({ ...d, recurring: [...d.recurring, rule] }));
+  return rule;
+}
+
+export function saveRule(id: ID, draft: RuleDraft): void {
+  appStore.getState().update((d) => ({
+    ...d,
+    recurring: d.recurring.map((r) => (r.id === id ? updateRule(r, draft) : r)),
+  }));
+}
+
+/** Deletes a rule; entries it logged stay. Returns it for Undo. */
+export function deleteRule(id: ID): RecurringRule | null {
+  const rule = appStore.getState().data.recurring.find((r) => r.id === id) ?? null;
+  appStore.getState().update((d) => ({ ...d, recurring: d.recurring.filter((r) => r.id !== id) }));
+  return rule;
+}
+
+export function putBackRule(rule: RecurringRule): void {
+  appStore.getState().update((d) => ({
+    ...d,
+    recurring: [...d.recurring.filter((r) => r.id !== rule.id), rule],
+  }));
 }

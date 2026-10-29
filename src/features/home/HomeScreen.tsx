@@ -18,6 +18,7 @@ import { useQuickAdd } from "../quick-add/quick-add-context";
 import { BudgetSheet } from "./BudgetSheet";
 import { QuickLogRow } from "./QuickLogRow";
 import { PiggyPeekSection } from "./PiggyPeekSection";
+import { ComingUp, DueNow } from "./RecurringSections";
 import { RecentEmpty } from "./RecentEmpty";
 
 /** Home (PRD §8.3): greeting, the month tank, bucket vials and recent entries. */
@@ -53,10 +54,14 @@ export function HomeScreen() {
       />
       <BudgetSheet month={month} open={budgetOpen} onOpenChange={setBudgetOpen} />
 
+      <DueNow month={month} today={today} />
+
       <QuickLogRow month={month} />
 
       <VialGroup title="Spend" buckets={spend} month={month} today={today} days={days} />
       <VialGroup title="Save" buckets={save} month={month} today={today} days={days} />
+
+      <ComingUp month={month} today={today} />
 
       <PiggyPeekSection today={dayKeyOfDate(now)} />
 

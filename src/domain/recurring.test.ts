@@ -2,14 +2,18 @@ import { describe, expect, it } from "vitest";
 import { bucketUsed } from "./budget";
 import { rupees } from "./money";
 import {
+  comingUp,
+  createRule,
   dueToAsk,
   logRecurring,
   missedWhenCreated,
   occurrenceDay,
   recurringState,
+  ruleProblem,
   runAutoRecurring,
   skipRecurring,
   upcomingForBucket,
+  updateRule,
 } from "./recurring";
 import { bucket, entry, newId, november, rule } from "./testing";
 
@@ -144,5 +148,48 @@ describe("PRD §13 recurring edge cases", () => {
     expect(missedWhenCreated({ dayOfMonth: 5 }, { key: "2026-11" }, 18)).toBe(true);
     expect(missedWhenCreated({ dayOfMonth: 18 }, { key: "2026-11" }, 18)).toBe(false);
     expect(missedWhenCreated({ dayOfMonth: 25 }, { key: "2026-11" }, 18)).toBe(false);
+  });
+});
+
+describe("managing rules (PRD §8.7)", () => {
+  const draft = {
+    name: " Rent ",
+    amount: rupees(15_000),
+    bucketId: "saving",
+    dayOfMonth: 1,
+    mode: "auto" as const,
+    active: true,
+  };
+  const ids = november().buckets.map((b) => b.id);
+
+  it("checks name, amount, bucket and day", () => {
+    expect(ruleProblem(draft, ids)).toBeNull();
+    expect(ruleProblem({ ...draft, name: "" }, ids)).toBe("name-missing");
+    expect(ruleProblem({ ...draft, amount: 0 }, ids)).toBe("amount");
+    expect(ruleProblem({ ...draft, bucketId: "gone" }, ids)).toBe("bucket");
+    expect(ruleProblem({ ...draft, dayOfMonth: 32 }, ids)).toBe("day");
+  });
+
+  it("creates and edits rules, trimming the name", () => {
+    const r = createRule(draft, "rent", NOW);
+    expect(r).toMatchObject({ id: "rent", name: "Rent", createdAt: NOW });
+    expect(updateRule(r, { ...draft, amount: rupees(16_000) })).toMatchObject({
+      id: "rent",
+      amount: rupees(16_000),
+    });
+  });
+
+  it("'Coming up' lists what's still due this month and rules needing a bucket, by day", () => {
+    const rules = [
+      rule({ id: "late", dayOfMonth: 28 }),
+      rule({ id: "early", dayOfMonth: 20 }),
+      rule({ id: "orphan", bucketId: "gone", dayOfMonth: 25 }),
+      rule({ id: "past", dayOfMonth: 2 }),
+    ];
+    expect(comingUp(rules, november(), 18).map((i) => [i.rule.id, i.state])).toEqual([
+      ["early", "upcoming"],
+      ["orphan", "needs-bucket"],
+      ["late", "upcoming"],
+    ]);
   });
 });

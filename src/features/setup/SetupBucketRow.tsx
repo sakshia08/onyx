@@ -2,17 +2,37 @@ import { GripVertical } from "lucide-react";
 import { Reorder, useDragControls } from "motion/react";
 import { Amount } from "@/components/Amount";
 import { bucketTint } from "@/components/bucket-color";
-import type { Bucket } from "@/domain/types";
+import { formatAmount, type Paise } from "@/domain/money";
+import type { Bucket, RecurringRule } from "@/domain/types";
 
 /** A bucket in setup: drag handle, emoji, name and kind, and its amount. Tap to edit. */
-export function SetupBucketRow({ bucket, onOpen }: { bucket: Bucket; onOpen: () => void }) {
+export interface BucketHints {
+  /** "Avg ₹6,200": the last 3 closed months (PRD §8.2). */
+  average: Paise | null;
+  /** Recurring amounts already committed to this bucket. */
+  recurring: readonly RecurringRule[];
+}
+
+export function SetupBucketRow({
+  bucket,
+  onOpen,
+  hints,
+  onUseAverage,
+}: {
+  bucket: Bucket;
+  onOpen: () => void;
+  hints?: BucketHints;
+  onUseAverage?: (amount: Paise) => void;
+}) {
+  const average = hints?.average ?? null;
+  const showHints = (average !== null && average > 0) || (hints?.recurring.length ?? 0) > 0;
   const controls = useDragControls();
   return (
     <Reorder.Item
       value={bucket}
       dragListener={false}
       dragControls={controls}
-      className="flex items-center rounded-inner border border-hairline bg-surface-1"
+      className="flex flex-wrap items-center rounded-inner border border-hairline bg-surface-1"
       whileDrag={{ scale: 1.02, backgroundColor: "var(--surface-2)" }}
     >
       <span
@@ -49,6 +69,25 @@ export function SetupBucketRow({ bucket, onOpen }: { bucket: Bucket; onOpen: () 
           <span className="text-callout text-text-3">Set amount</span>
         )}
       </button>
+      {showHints && (
+        <div className="flex w-full flex-wrap items-center gap-2 pr-4 pb-3 pl-[52px]">
+          {average !== null && average > 0 && (
+            <button
+              type="button"
+              onClick={() => onUseAverage?.(average)}
+              aria-label={`Use the average, ${formatAmount(average)}`}
+              className="hit-44 rounded-pill bg-surface-2 px-2.5 py-1 text-caption text-text-2"
+            >
+              Avg {formatAmount(average)}
+            </button>
+          )}
+          {hints?.recurring.map((r) => (
+            <span key={r.id} className="text-caption text-text-3">
+              {r.name} {formatAmount(r.amount)} recurring
+            </span>
+          ))}
+        </div>
+      )}
     </Reorder.Item>
   );
 }

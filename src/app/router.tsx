@@ -7,11 +7,17 @@ import {
   PiggyDetail,
   PiggyEditor,
   PiggyScreen,
+  RecapFlow,
+  RecapReview,
+  LeftoverStep,
+  RecurringScreen,
+  RuleEditor,
+  SettingsScreen,
   SetupFlow,
   Welcome,
 } from "./lazy-screens";
 import { AppShell } from "./AppShell";
-import { RequireMonth, RequireNoMonth } from "./gates";
+import { RequireMonth, StageGate } from "./gates";
 import { PlaceholderScreen } from "./PlaceholderScreen";
 
 // Dev-only pages; production builds leave them out entirely.
@@ -43,23 +49,66 @@ export const router = createHashRouter([
   {
     path: "/welcome",
     element: (
-      <RequireNoMonth>
+      <StageGate allow={["welcome"]}>
         <Lazy>
           <Welcome />
         </Lazy>
-      </RequireNoMonth>
+      </StageGate>
     ),
   },
   {
     path: "/setup",
     element: (
-      <RequireNoMonth>
+      <StageGate allow={["welcome", "setup"]}>
         <Lazy>
           <SetupFlow />
         </Lazy>
-      </RequireNoMonth>
+      </StageGate>
     ),
   },
+  // Month end: the recap, then leftover to piggy, then setup (PRD §8.8)
+  {
+    path: "/recap",
+    element: (
+      <StageGate allow={["recap"]}>
+        <Lazy>
+          <RecapFlow />
+        </Lazy>
+      </StageGate>
+    ),
+  },
+  {
+    path: "/recap/leftover",
+    element: (
+      <StageGate allow={["recap"]}>
+        <Lazy>
+          <LeftoverStep />
+        </Lazy>
+      </StageGate>
+    ),
+  },
+  // A past month's recap, reopened (PRD §8.8: "Recaps are saved and can be reopened")
+  {
+    path: "/recap/:key",
+    element: (
+      <RequireMonth>
+        <Lazy>
+          <RecapReview />
+        </Lazy>
+      </RequireMonth>
+    ),
+  },
+  // Recurring expenses (PRD §8.7): full screens, no tab bar
+  ...["/recurring/new", "/recurring/:id"].map((path) => ({
+    path,
+    element: (
+      <RequireMonth>
+        <Lazy>
+          <RuleEditor />
+        </Lazy>
+      </RequireMonth>
+    ),
+  })),
   // Creating and editing a piggy: full screen, no tab bar
   ...["/piggy/new", "/piggy/:id/edit"].map((path) => ({
     path,
@@ -113,7 +162,22 @@ export const router = createHashRouter([
           </Lazy>
         ),
       },
-      { path: "settings", element: <PlaceholderScreen title="Settings" phase={8} /> },
+      {
+        path: "settings",
+        element: (
+          <Lazy>
+            <SettingsScreen />
+          </Lazy>
+        ),
+      },
+      {
+        path: "recurring",
+        element: (
+          <Lazy>
+            <RecurringScreen />
+          </Lazy>
+        ),
+      },
     ],
   },
   ...devRoutes,

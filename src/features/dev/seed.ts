@@ -9,7 +9,7 @@ import {
 } from "@/domain/dates";
 import { rupees, type Paise } from "@/domain/money";
 import { createEmptyState } from "@/domain/state";
-import type { AppState, Bucket, Entry, Piggy, PiggyTxn } from "@/domain/types";
+import type { AppState, Bucket, Entry, Piggy, PiggyTxn, RecurringRule } from "@/domain/types";
 import { newId } from "@/lib/id";
 
 /** Dev only: a realistic month for trying screens before Quick add exists. */
@@ -65,15 +65,36 @@ export function sampleAppState(now: Date): AppState {
     entry("food", rupees(180) + 50, 0, [13, 42], "Dosa and filter coffee"),
     entry("commute", rupees(40), 0, [9, 10], "Metro"),
     entry("food", rupees(400), 0, [8, 55], "Rahul paid me back", "refund"),
-    entry("leisure", rupees(649), 1, [9, 0], "Netflix"),
+    entry("leisure", rupees(649), 1, [9, 0], "Spotify"),
     entry("food", rupees(1_250), 1, [20, 30], "Dinner with friends"),
     entry("commute", rupees(2_410), 3, [18, 5], "Uber rides"),
     entry("food", rupees(4_169) + 50, 6, [12, 0], "Groceries and eating out"),
     entry("leisure", rupees(1_851), 4, [21, 0], "Concert tickets"),
-    entry("investing", rupees(10_000), 10, [10, 0], "SIP"),
+    {
+      ...entry("investing", rupees(10_000), 10, [10, 0], "SIP"),
+      source: "recurring",
+      recurringRuleId: "sip",
+    },
     entry("saving", rupees(26_000), 12, [10, 30], "Fixed deposit"),
   ];
   const empty = createEmptyState(now);
+  const rule = (
+    id: string,
+    name: string,
+    amount: Paise,
+    bucketId: string,
+    dayOfMonth: number,
+    mode: RecurringRule["mode"],
+  ): RecurringRule => ({
+    id,
+    name,
+    amount,
+    bucketId,
+    dayOfMonth,
+    mode,
+    active: true,
+    createdAt: toISODate(now),
+  });
   // Piggies saved into last month, so this month's numbers are only the entries above
   const last = previousMonthKey(key);
   const at = (monthKey: string, day: number) => isoForDay(monthKey, day, 10, 0);
@@ -130,6 +151,11 @@ export function sampleAppState(now: Date): AppState {
     ...empty,
     profile: { name: "Sakshi" },
     piggies,
+    recurring: [
+      rule("sip", "SIP", rupees(10_000), "investing", 5, "auto"),
+      rule("phone-bill", "Phone bill", rupees(599), "leisure", 15, "ask"),
+      rule("netflix", "Netflix", rupees(649), "leisure", 28, "auto"),
+    ],
     activeMonthKey: key,
     months: {
       [key]: {
@@ -139,7 +165,7 @@ export function sampleAppState(now: Date): AppState {
         buckets,
         piggyPlans: [{ piggyId: "goa", planned: rupees(2_900) }],
         entries,
-        recurringLog: [],
+        recurringLog: [{ ruleId: "sip", status: "logged" }],
         alertsShown: [],
         createdAt: toISODate(now),
       },

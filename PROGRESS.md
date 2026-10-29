@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **Phase 5 done** (waiting for the user's go-ahead to start Phase 6). Phase 4's airplane-mode check on the iPhone is still to do (the user will test it later).
+**Current status:** **Phase 6 done** (waiting for the user's go-ahead to start Phase 7). Phase 4's airplane-mode check on the iPhone is still to do.
 
 ## Checklist (PRD §14)
 
@@ -77,12 +77,12 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] Playwright: `tests/e2e/phase-5.spec.ts` (11 tests). Dev seed now has 3 piggies; `/#/dev/seed?setup=1` opens setup with piggies
 
 ### Phase 6: Recurring, rollover and recap
-- Note: setup is currently only reachable before the first month (`RequireNoMonth` in `src/app/gates.tsx`). Rollover must open setup for the new month after the recap.
-- [ ] Recurring rules (§8.7): auto and ask-first, Due now, Coming up
-- [ ] Month rollover (§8.8)
-- [ ] Recap stories
-- [ ] Smarter setup hints (3-month averages, recurring amounts)
-- [ ] Leftover to piggy
+- [x] Recurring rules (§8.7): list (Settings → Recurring expenses, and "Manage" in Coming up), editor (full screen), auto and ask-first, Due now (Log / Skip), Coming up (with total and "Needs a bucket"); a rule created after its day offers "Log"; delete with Undo
+- [x] Month rollover (§8.8): `MonthWatcher` checks on launch, on returning to the app and every minute; closes the month; a backwards clock shows a calm warning and changes nothing. One `appStage` decides welcome → month → recap → setup (`StageGate` in `src/app/gates.tsx`)
+- [x] Recap stories: review (confetti when under budget), buckets, highlights, compared with last month (skipped without one), piggies, backup (share sheet / download; records the date only on success), "Plan December →". Reopen any closed month at `/#/recap/2026-11` (Insights links it in Phase 7)
+- [x] Smarter setup hints: "Avg ₹X" (last 3 closed months; tap to use) and "Rent ₹X recurring"; "Same as last month" uses the latest earlier month even after a gap
+- [x] Leftover to piggy: after the recap, never more than what's left; the closed month keeps its full remaining amount
+- [x] Playwright: `tests/e2e/phase-6.spec.ts` (time travel to 28 Nov, 1 Dec and backwards). Dev seed has 3 recurring rules
 
 ### Phase 7: Insights and search (§8.9)
 - [ ] Month switcher and summary
@@ -118,6 +118,12 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **tailwind-merge** is taught our token names in `src/lib/cn.ts` (otherwise it drops sizes like `text-display`). A test guards this.
 - **Tailwind defaults switched off** (colors, text sizes, radii, shadows), so only design tokens can be used.
 - **Design direction "Liquid":** the first design copied the inspo too closely; the user picked "Liquid" from three concepts (Liquid, Ledger, Dial). PRD §8.3, §9 and §10 updated. Tokens: `--accent-a/b/c` replaced by `--liquid` and `--accent`; new `text-hero`, `rounded-tank`, `rounded-vial`.
+- **Month-end decisions (Phase 6):**
+  - "Biggest expense" and "most-used bucket" count spend buckets only (a fixed deposit isn't spending).
+  - The recap's Piggies card shows every piggy that existed that month, even with ₹0 stashed.
+  - The comparison shows ↑/↓ and a percentage in neutral grey (no red/green judgement); buckets new this month show "New".
+  - The leftover step appears only if the month ended above ₹0 and there's an active piggy; otherwise the recap goes straight to setup.
+  - The recap's backup card uses the share sheet where it can, otherwise downloads the file. Full backup and restore settings are Phase 8.
 - **Piggy decisions (Phase 5):**
   - Templates: only Insurance is yearly, as the PRD lists it (Birthday and Diwali are one-time; changeable).
   - A yearly piggy needs a date.
@@ -144,7 +150,7 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **Save status lives in its own small store**, so reporting a failed save can never trigger another save.
 - **Heads-ups:** if one entry jumps past both 80% and 100%, only the 100% toast shows, and both are recorded.
 - **Yearly piggy cycles** skip ahead several years if the app wasn't opened; a 29 Feb target lands on 28 Feb in non-leap years.
-- **Bundle:** about 231 KB gzipped at launch after Phase 4 (welcome, setup, bucket detail and activity now load on demand; budget 250). Was 201 KB after Phase 1; zod added ~35 KB. `zod/mini` is an option later if size gets tight.
+- **Bundle:** 233 KB gzipped at launch after Phase 6 (budget 250; getting close: Phase 8 should check what can load later). About 231 KB after Phase 4 (welcome, setup, bucket detail and activity now load on demand; budget 250). Was 201 KB after Phase 1; zod added ~35 KB. `zod/mini` is an option later if size gets tight.
 - **Save bucket over plan:** big number shows "+₹1,000" in normal white, with "extra put away" (user confirmed).
 - **Status-bar fade:** a soft gradient under the status bar so scrolled content doesn't clash with the clock.
 - **Toast** is near-solid (`surface-2` at 95% + blur), not glass, so its text stays readable over busy content.

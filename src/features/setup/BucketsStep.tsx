@@ -7,7 +7,9 @@ import { BUCKET_COLORS } from "@/domain/bucket-colors";
 import { monthName } from "@/domain/dates";
 import type { Paise } from "@/domain/money";
 import { unallocated } from "@/domain/totals";
+import { averageUsed, committedRecurring } from "@/domain/setup";
 import type { Bucket, MonthKey, PiggyPlan } from "@/domain/types";
+import { useAppStore } from "@/store";
 import { newId } from "@/lib/id";
 import { BucketEditorSheet } from "../buckets/BucketEditorSheet";
 import { BackButton } from "./BackButton";
@@ -41,6 +43,8 @@ export function BucketsStep({
 }: BucketsStepProps) {
   const [editing, setEditing] = useState<{ bucket: Bucket; isNew: boolean } | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
+  const months = useAppStore((s) => s.data.months);
+  const rules = useAppStore((s) => s.data.recurring);
   const left = unallocated({ totalBudget: budget, buckets, piggyPlans });
 
   const open = (bucket: Bucket, isNew: boolean) => {
@@ -97,6 +101,13 @@ export function BucketsStep({
           <SetupBucketRow
             key={b.id}
             bucket={b}
+            hints={{
+              average: averageUsed(Object.values(months), b.id, monthKey),
+              recurring: committedRecurring(rules, b.id),
+            }}
+            onUseAverage={(amount) => {
+              onChange(buckets.map((x) => (x.id === b.id ? { ...x, allocated: amount } : x)));
+            }}
             onOpen={() => {
               open(b, false);
             }}
