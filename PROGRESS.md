@@ -196,4 +196,5 @@ Small details, parked until the phase that needs them. Until then, use the defau
 
 ## Ideas for later
 
+- **"Owed to me" list** (asked 29 Oct, parked by the user): people who owe me money, how much and what for, with "Paid back". Open questions when picked up: reminder-only or linked to buckets (lend = expense, paid back = money back)? Part payments? Suggested place: an "Owed to me" section on Home plus a full list.
 - **Add a bucket mid-month** from Home or bucket detail. The PRD only adds buckets in setup; right now a new bucket waits for next month's setup.
