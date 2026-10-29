@@ -36,7 +36,8 @@ export default defineConfig({
       },
       workbox: {
         // Everything the app needs, so it opens in airplane mode
-        globPatterns: ["**/*.{js,css,html,svg,png,ico,woff2,webmanifest}"],
+        // The manifest is added by the plugin itself; listing it here too broke the service worker
+        globPatterns: ["**/*.{js,css,html,svg,png,ico,woff2}"],
         // Launch screens are read by iOS when installing, not by the app
         globIgnores: ["**/apple-splash-*"],
         navigateFallback: "index.html",

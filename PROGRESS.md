@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **All 8 phases built (version 1.0.0).** Waiting for the user to push and test on the iPhone: backup round trip (Phase 8) and airplane mode (Phase 4). 244 unit, 69 screen and 5 PWA tests passing.
+**Current status:** **All 8 phases built (version 1.0.0).** Backup round trip tested on the iPhone. Still to check on the phone: airplane mode (Phase 4) and the PIN. 244 unit, 69 screen and 5 PWA tests passing.
 
 ## Checklist (PRD §14)
 
@@ -97,9 +97,9 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] PIN lock: 4 digits, PBKDF2 (210,000 rounds, random salt) via Web Crypto; locks on launch and on return after Immediately / 1 min / 5 min; 5 wrong tries → 30-second wait; "Forgot PIN?" explains erase + restore; "a privacy screen, not encryption"
 - [x] Backup and restore (§8.11): back up now (share sheet, or download), last backup date (amber after 35 days or never), monthly step toggle, restore with zod check and preview, "Replace everything", undo restore, storage used. Restore is also on Welcome, for after an erase or on a new phone
 - [x] Settings screen (§8.12): name, recurring, favorites manager (drag to reorder, edit, delete with Undo), privacy, backup, motion (follow iPhone / reduce: `MotionConfig` "always" + `data-motion`), erase all data (type ERASE; removes the safety copy too), about (version from package.json)
-- [ ] **Test backups on the real iPhone** (save to Files, erase, restore, undo restore): the user's step
+- [x] **Tested backups on the real iPhone** (29 Oct): saved to Files, erased, restored from Welcome, undo restore, restored again. All data came back.
 - [x] Final polish, accessibility and performance pass: launch JS 240 KB gzipped (budget 250); every icon button has a VoiceOver label; tabs announce the current one
-- [ ] **Redeploy**: the user pushes; Vercel redeploys. Version 1.0.0
+- [x] **Redeployed** (version 1.0.0 live at https://onyx-rust-one.vercel.app)
 
 ## Decisions
 
@@ -145,7 +145,7 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
   - Piggy spends are logged through Quick add but aren't editable there; tap them to open the piggy, swipe to delete.
   - In Activity a stash shows as −₹ (money out of the month); in a piggy's history it shows as +₹.
 - **App icon:** the pig filled with pink liquid on near-black, with a soft pink glow (`public/icon.svg`). Launch screens are black with the icon small in the middle.
-- **Offline test:** Playwright's test browsers don't keep a real cache store, so a full airplane-mode reload can't be faked. The PWA tests check the precache list and that the service worker takes control; airplane mode is checked on the iPhone.
+- **Offline (fixed 29 Oct):** the service worker listed `manifest.webmanifest` twice with different revisions, so Workbox refused to install it ("add-to-cache-list-conflicting-entries") and Onyx didn't work offline on the iPhone. In Phase 4 the Chromium offline test showed this, and it was wrongly put down to Playwright. Now `globPatterns` leaves the manifest to the plugin, `tests/pwa/offline.spec.ts` fails on any duplicate, and `tests/pwa/offline-reload.spec.ts` does a real no-network reload (Chromium).
 - **Install guide only on iPhone/iPad** (not on the laptop), and the Playwright tests pretend to be the installed app.
 - **Heads-ups ride on the "logged" toast** ("₹1,200 logged to Food. 80% of Food used.", amber icon) so Undo is never lost behind a second toast.
 - **"Save as favorite?" is asked once**: showing it counts as asking, whether or not Save is tapped. It waits until the Undo toast has gone.

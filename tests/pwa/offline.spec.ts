@@ -22,6 +22,10 @@ test("the service worker precaches every file the app is built from", () => {
       .map((f) => `assets/${f}`),
   ];
   expect(needed.filter((f) => !precached.has(f))).toEqual([]);
+  // The same file listed twice with different versions makes Workbox refuse to install
+  // ("add-to-cache-list-conflicting-entries"): that once broke offline on the iPhone
+  const all = [...sw.matchAll(/url:"([^"]+)"/g)].map((m) => m[1]);
+  expect(all.length).toBe(precached.size);
   // Every page load falls back to the cached app (so deep links work offline too)
   expect(sw).toMatch(/NavigationRoute\(\w+\.createHandlerBoundToURL\("index\.html"\)\)/);
 });
