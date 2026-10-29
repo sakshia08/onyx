@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **All 8 phases built (version 1.0.0).** Backup round trip tested on the iPhone. Still to check on the phone: airplane mode (Phase 4) and the PIN. 244 unit, 69 screen and 5 PWA tests passing.
+**Current status:** **All 8 phases built (version 1.0.0).** **Done and tested on the iPhone** (29 Oct): install, backup round trip, airplane mode and the PIN all work. Next: the user lives with it for a month; improvements go to "Ideas for later" or a new round. 244 unit, 69 screen and 5 PWA tests passing.
 
 ## Checklist (PRD §14)
 
@@ -59,7 +59,7 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] Less-used screens (welcome, setup, bucket detail, activity) load on demand
 - [x] `npm run test:pwa`: production-build tests (precache list, service worker control, manifest and icons, install guide, no outside requests)
 - [x] **Deployed** to Vercel from the public GitHub repo: https://onyx-rust-one.vercel.app (redeploys on every push to `main`)
-- [ ] **Test on the iPhone**: add to Home Screen, airplane mode, update prompt
+- [x] **Tested on the iPhone**: added to Home Screen; airplane mode works (29 Oct, after the offline fix)
 - [x] **Phone feedback 1** (29 Oct): swipe left to delete entries (with Undo); tap the month tank to change the budget; the note field is now "What was it?" and shows as the entry's name (PRD §17 answer 12). Tested in `tests/e2e/phone-feedback.spec.ts`.
 
 ### Phase 5: Piggy banks (§8.6)
@@ -98,6 +98,7 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] Backup and restore (§8.11): back up now (share sheet, or download), last backup date (amber after 35 days or never), monthly step toggle, restore with zod check and preview, "Replace everything", undo restore, storage used. Restore is also on Welcome, for after an erase or on a new phone
 - [x] Settings screen (§8.12): name, recurring, favorites manager (drag to reorder, edit, delete with Undo), privacy, backup, motion (follow iPhone / reduce: `MotionConfig` "always" + `data-motion`), erase all data (type ERASE; removes the safety copy too), about (version from package.json)
 - [x] **Tested backups on the real iPhone** (29 Oct): saved to Files, erased, restored from Welcome, undo restore, restored again. All data came back.
+- [x] PIN tested on the iPhone (29 Oct)
 - [x] Final polish, accessibility and performance pass: launch JS 240 KB gzipped (budget 250); every icon button has a VoiceOver label; tabs announce the current one
 - [x] **Redeployed** (version 1.0.0 live at https://onyx-rust-one.vercel.app)
 
