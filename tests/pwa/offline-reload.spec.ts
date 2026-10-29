@@ -15,6 +15,10 @@ test("Onyx opens with no network after the first visit (PRD §12.3)", async ({ p
   });
   await page.reload();
   await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
+  // Settings → About says so
+  await page.getByRole("link", { name: "Settings" }).click();
+  await expect(page.getByText("Ready", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Home" }).click();
 
   await context.setOffline(true);
   await page.reload();

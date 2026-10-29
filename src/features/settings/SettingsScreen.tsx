@@ -1,4 +1,4 @@
-import { Archive, Info, Lock, Repeat, Sparkles, Star, Trash2, User } from "lucide-react";
+import { Archive, Info, Lock, Repeat, Sparkles, Star, Trash2, User, WifiOff } from "lucide-react";
 import { useState } from "react";
 import { Screen } from "@/app/Screen";
 import { Button } from "@/components/Button";
@@ -7,6 +7,7 @@ import { Sheet } from "@/components/Sheet";
 import { TextField } from "@/components/TextField";
 import { Toggle } from "@/components/Toggle";
 import { isBackupOverdue } from "@/domain/backup";
+import { useOfflineReady } from "@/lib/offline-status";
 import { changeSettings, setProfileName } from "@/store/actions";
 import { useAppStore } from "@/store";
 import { EraseSheet } from "./EraseSheet";
@@ -23,6 +24,7 @@ export function SettingsScreen() {
   const data = useAppStore((s) => s.data);
   const [nameOpen, setNameOpen] = useState(false);
   const [eraseOpen, setEraseOpen] = useState(false);
+  const offline = useOfflineReady();
   const overdue = isBackupOverdue(data.meta.lastBackupAt, new Date());
 
   return (
@@ -120,6 +122,12 @@ export function SettingsScreen() {
           icon={<Info className="size-5" />}
           label="Onyx"
           value={`Version ${__APP_VERSION__}`}
+        />
+        <SettingsRow
+          icon={<WifiOff className="size-5" />}
+          label="Offline"
+          value={offline ? "Ready" : "Not ready yet"}
+          tone={offline ? "default" : "warning"}
         />
       </SettingsGroup>
 

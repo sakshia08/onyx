@@ -12,16 +12,29 @@ export function UpdatePrompt() {
   const toast = useToast();
   const {
     needRefresh: [needRefresh],
+    offlineReady: [offlineReady],
     updateServiceWorker,
   } = useRegisterSW({
+    // Register straight away rather than waiting for the page to finish loading
+    immediate: true,
     onRegisteredSW(_url, registration) {
       if (!registration) return;
-      // Look for a new version every hour while the app is open
-      window.setInterval(() => {
+      const check = () => {
         if (navigator.onLine) void registration.update();
-      }, CHECK_EVERY_MS);
+      };
+      // iPhone resumes home-screen apps without reloading them, so look for a new version
+      // every time Onyx comes back to the front, as well as every hour
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") check();
+      });
+      window.setInterval(check, CHECK_EVERY_MS);
     },
   });
+
+  useEffect(() => {
+    if (!offlineReady) return;
+    toast.queue({ tone: "success", message: "Onyx is ready to work offline" });
+  }, [offlineReady, toast]);
 
   useEffect(() => {
     if (!needRefresh) return;
