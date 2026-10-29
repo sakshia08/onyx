@@ -100,7 +100,7 @@ test("month end: recap, leftover to piggy, then setup with hints (PRD §8.8)", a
   await page.waitForTimeout(900);
   await shot(page, "recap-1-review-390");
 
-  const cards = ["buckets", "highlights", "piggies", "backup"]; // no "compare": October has no data
+  const cards = ["buckets", "highlights", "compare", "piggies", "backup"];
   for (const card of cards) {
     await page.getByRole("button", { name: "Next" }).click();
     await page.waitForTimeout(700);

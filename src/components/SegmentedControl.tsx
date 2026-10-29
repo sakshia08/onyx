@@ -40,7 +40,7 @@ export function SegmentedControl<T extends string>({
               key={option.value}
               value={option.value}
               className={cn(
-                "relative flex-1 rounded-pill px-4 text-callout font-semibold transition-colors",
+                "relative flex-1 rounded-pill px-2 text-callout font-semibold whitespace-nowrap transition-colors",
                 active ? "text-bg" : "text-text-2",
               )}
             >

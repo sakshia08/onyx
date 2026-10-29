@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { Amount } from "@/components/Amount";
 import { AmountSheet } from "@/components/AmountSheet";
 import { Button } from "@/components/Button";
@@ -20,7 +21,11 @@ import { FullScreen } from "../setup/FullScreen";
 export function LeftoverStep() {
   const toast = useToast();
   const data = useAppStore((s) => s.data);
-  const month = data.activeMonthKey === null ? undefined : data.months[data.activeMonthKey];
+  const navigate = useNavigate();
+  const { key } = useParams();
+  // From Insights for any closed month, or right after the recap for the month that just ended
+  const fromInsights = key !== undefined;
+  const month = data.months[key ?? data.activeMonthKey ?? ""];
   const active = data.piggies.filter((p) => p.status === "active");
   const [piggyId, setPiggyId] = useState<ID | null>(active[0]?.id ?? null);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -30,7 +35,8 @@ export function LeftoverStep() {
   const piggy = active.find((p) => p.id === piggyId);
   const next = monthName(monthKeyOfDate(new Date()));
   const done = () => {
-    finishRecap(month.key);
+    if (fromInsights) void navigate(-1);
+    else finishRecap(month.key);
   };
 
   return (
@@ -42,7 +48,7 @@ export function LeftoverStep() {
           className="w-full"
           onClick={done}
         >
-          {left > 0 ? "Skip" : `Plan ${next} →`}
+          {fromInsights ? "Done" : left > 0 ? "Skip" : `Plan ${next} →`}
         </Button>
       }
     >

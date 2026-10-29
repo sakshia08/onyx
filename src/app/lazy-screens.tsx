@@ -43,6 +43,16 @@ export const SettingsScreen = lazy(() =>
   import("@/features/settings/SettingsScreen").then((m) => ({ default: m.SettingsScreen })),
 );
 
+export const InsightsScreen = lazy(() =>
+  import("@/features/insights/InsightsScreen").then((m) => ({ default: m.InsightsScreen })),
+);
+export const SearchScreen = lazy(() =>
+  import("@/features/insights/SearchScreen").then((m) => ({ default: m.SearchScreen })),
+);
+export const MonthDetail = lazy(() =>
+  import("@/features/insights/MonthDetail").then((m) => ({ default: m.MonthDetail })),
+);
+
 export function Lazy({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={null}>{children}</Suspense>;
 }

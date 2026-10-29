@@ -106,6 +106,19 @@ export function sampleAppState(now: Date): AppState {
     monthKey: date.slice(0, 7),
     createdAt: date,
   });
+  const pastEntry = (bucketId: string, amount: Paise, day: number, note: string): Entry => {
+    const date = isoForDay(last, day, 12, 30);
+    return {
+      id: newId(),
+      type: "expense",
+      bucketId,
+      amount,
+      note,
+      date,
+      createdAt: date,
+      source: "manual",
+    };
+  };
   const inMonths = (n: number) => dayKeyOfDate(addMonths(now, n));
   const piggies: Piggy[] = [
     {
@@ -158,6 +171,27 @@ export function sampleAppState(now: Date): AppState {
     ],
     activeMonthKey: key,
     months: {
+      // Last month, closed and reviewed, so Insights and the recap have something to compare
+      [last]: {
+        key: last,
+        status: "closed",
+        totalBudget: rupees(65_000),
+        buckets: buckets.filter((b) => b.id !== "groceries"),
+        piggyPlans: [],
+        entries: [
+          pastEntry("food", rupees(3_200), 4, "Dosa and filter coffee"),
+          pastEntry("food", rupees(2_900), 18, "Swiggy"),
+          pastEntry("commute", rupees(2_100), 9, "Uber rides"),
+          pastEntry("leisure", rupees(1_800), 21, "Movie night"),
+          pastEntry("investing", rupees(10_000), 5, "SIP"),
+          pastEntry("saving", rupees(20_000), 6, "Fixed deposit"),
+        ],
+        recurringLog: [],
+        alertsShown: [],
+        createdAt: at(last, 1),
+        closedAt: isoForDay(key, 1, 8, 0),
+        recapSeenAt: isoForDay(key, 1, 8, 5),
+      },
       [key]: {
         key,
         status: "active",

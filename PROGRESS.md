@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **Phase 6 done** (waiting for the user's go-ahead to start Phase 7). Phase 4's airplane-mode check on the iPhone is still to do.
+**Current status:** **Phase 7 done** (waiting for the user's go-ahead to start Phase 8, the last phase). Phase 4's airplane-mode check on the iPhone is still to do.
 
 ## Checklist (PRD §14)
 
@@ -85,11 +85,12 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] Playwright: `tests/e2e/phase-6.spec.ts` (time travel to 28 Nov, 1 Dec and backwards). Dev seed has 3 recurring rules
 
 ### Phase 7: Insights and search (§8.9)
-- [ ] Month switcher and summary
-- [ ] Bar chart (week and month views)
-- [ ] Bucket tiles and saved this month
-- [ ] Past month detail (read-only)
-- [ ] Search with filters
+- [x] Month switcher (newest first) and summary (left, used of budget, "Closed" for past months)
+- [x] Bar chart in custom SVG (`BarChart`): Week (Mon–Sun, today's week; days outside the month are empty) and Month (by day); tap a bar to light it with a value tag; spend buckets only
+- [x] Bucket tiles (used, change vs last month: ↑/↓ %, "New") and saved this month (save buckets + piggy stashes)
+- [x] Past months: "View recap", "Move leftover to a piggy" (`/#/leftover/:key`), and a read-only month detail (`/#/month/:key`) with "₹X moved to Goa trip" lines; tapping an entry only shows its details
+- [x] Search (`/#/search`): names across all months, any part, any capitals; filters for bucket, type and month range; "N entries · ₹X", grouped by month
+- [x] Playwright: `tests/e2e/phase-7.spec.ts`. Dev seed now has a closed October
 
 ### Phase 8: Privacy, backup and settings
 - [ ] Privacy blur (§8.10)
@@ -118,6 +119,11 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **tailwind-merge** is taught our token names in `src/lib/cn.ts` (otherwise it drops sizes like `text-display`). A test guards this.
 - **Tailwind defaults switched off** (colors, text sizes, radii, shadows), so only design tokens can be used.
 - **Design direction "Liquid":** the first design copied the inspo too closely; the user picked "Liquid" from three concepts (Liquid, Ledger, Dial). PRD §8.3, §9 and §10 updated. Tokens: `--accent-a/b/c` replaced by `--liquid` and `--accent`; new `text-hero`, `rounded-tank`, `rounded-vial`.
+- **Insights decisions (Phase 7):**
+  - A day's bar is expenses minus money back in spend buckets. A day with more money back than spent shows its tag as "+₹X" in green, never as a red minus.
+  - A past month's chart starts on its last day; the current month's on today.
+  - Search starts empty ("Search names across every month") and shows results once you type or pick a filter. Its total is expenses minus money back.
+  - The tab bar keeps each tab lit inside its own screens (search and month detail light Insights) and tells VoiceOver which tab is current.
 - **Month-end decisions (Phase 6):**
   - "Biggest expense" and "most-used bucket" count spend buckets only (a fixed deposit isn't spending).
   - The recap's Piggies card shows every piggy that existed that month, even with ₹0 stashed.

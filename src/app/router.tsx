@@ -3,6 +3,9 @@ import { HomeScreen } from "@/features/home/HomeScreen";
 import {
   ActivityScreen,
   BucketDetail,
+  InsightsScreen,
+  MonthDetail,
+  SearchScreen,
   Lazy,
   PiggyDetail,
   PiggyEditor,
@@ -18,7 +21,6 @@ import {
 } from "./lazy-screens";
 import { AppShell } from "./AppShell";
 import { RequireMonth, StageGate } from "./gates";
-import { PlaceholderScreen } from "./PlaceholderScreen";
 
 // Dev-only pages; production builds leave them out entirely.
 const devRoutes: RouteObject[] = import.meta.env.DEV
@@ -98,6 +100,17 @@ export const router = createHashRouter([
       </RequireMonth>
     ),
   },
+  // Leftover from any closed month, from Insights (PRD §8.9)
+  {
+    path: "/leftover/:key",
+    element: (
+      <RequireMonth>
+        <Lazy>
+          <LeftoverStep />
+        </Lazy>
+      </RequireMonth>
+    ),
+  },
   // Recurring expenses (PRD §8.7): full screens, no tab bar
   ...["/recurring/new", "/recurring/:id"].map((path) => ({
     path,
@@ -145,7 +158,30 @@ export const router = createHashRouter([
           </Lazy>
         ),
       },
-      { path: "insights", element: <PlaceholderScreen title="Insights" phase={7} /> },
+      {
+        path: "insights",
+        element: (
+          <Lazy>
+            <InsightsScreen />
+          </Lazy>
+        ),
+      },
+      {
+        path: "search",
+        element: (
+          <Lazy>
+            <SearchScreen />
+          </Lazy>
+        ),
+      },
+      {
+        path: "month/:key",
+        element: (
+          <Lazy>
+            <MonthDetail />
+          </Lazy>
+        ),
+      },
       {
         path: "piggy",
         element: (

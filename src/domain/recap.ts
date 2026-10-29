@@ -47,7 +47,8 @@ export interface MonthRecap {
   moved: Paise;
 }
 
-function percentChange(now: Paise, before: Paise): number | "new" {
+/** Percent change from before to now, rounded; "new" when there was nothing before. */
+export function percentChange(now: Paise, before: Paise): number | "new" {
   if (before === 0) return now === 0 ? 0 : "new";
   return roundDiv((now - before) * 100, before);
 }

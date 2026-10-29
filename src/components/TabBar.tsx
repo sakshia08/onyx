@@ -1,6 +1,6 @@
 import { ChartColumn, House, Plus, Settings, type LucideIcon } from "lucide-react";
 import { motion } from "motion/react";
-import { NavLink, useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
 import { tapScale } from "@/lib/motion";
 import { PigIcon } from "./PigIcon";
 
@@ -43,37 +43,36 @@ export function TabBar({ onAdd }: TabBarProps) {
   );
 }
 
-/** Home stays active inside its own screens, like bucket detail. */
-const HOME_PATHS = /^\/(bucket\/.*|activity)?$/;
+/** Each tab stays active inside its own screens, like bucket detail or search. */
+const TAB_PATHS: Record<string, RegExp> = {
+  "/": /^\/(bucket\/.*|activity)?$/,
+  "/insights": /^\/(insights|search|month\/.*)$/,
+  "/piggy": /^\/piggy/,
+  "/settings": /^\/(settings|recurring)/,
+};
 
 function TabLink({ to, label, Icon }: { to: string; label: string; Icon: TabIcon }) {
   const { pathname } = useLocation();
+  const isActive = TAB_PATHS[to]?.test(pathname) ?? pathname === to;
   return (
-    <NavLink
+    <Link
       to={to}
-      end={to === "/"}
       aria-label={label}
+      aria-current={isActive ? "page" : undefined}
       className="relative grid size-12 place-items-center"
     >
-      {({ isActive: linkActive }) => {
-        const isActive = to === "/" ? HOME_PATHS.test(pathname) : linkActive;
-        return (
-          <>
-            <Icon
-              aria-hidden="true"
-              className={isActive ? "size-6 text-text-1" : "size-6 text-text-3"}
-              strokeWidth={isActive ? 2.2 : 1.8}
-            />
-            {isActive && (
-              <motion.span
-                layoutId="tab-dot"
-                aria-hidden="true"
-                className="absolute bottom-0.5 size-1 rounded-pill bg-text-1"
-              />
-            )}
-          </>
-        );
-      }}
-    </NavLink>
+      <Icon
+        aria-hidden="true"
+        className={isActive ? "size-6 text-text-1" : "size-6 text-text-3"}
+        strokeWidth={isActive ? 2.2 : 1.8}
+      />
+      {isActive && (
+        <motion.span
+          layoutId="tab-dot"
+          aria-hidden="true"
+          className="absolute bottom-0.5 size-1 rounded-pill bg-text-1"
+        />
+      )}
+    </Link>
   );
 }
