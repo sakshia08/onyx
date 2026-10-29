@@ -1,3 +1,4 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Amount } from "@/components/Amount";
@@ -7,7 +8,7 @@ import { Chip } from "@/components/Chip";
 import { PigIllustration } from "@/components/PigIllustration";
 import { useToast } from "@/components/toast-context";
 import { monthKeyOfDate, monthName } from "@/domain/dates";
-import { formatAmount } from "@/domain/money";
+
 import { maxLeftover } from "@/domain/rollover";
 import type { ID } from "@/domain/types";
 import { finishRecap, moveLeftoverToPiggy } from "@/store/actions";
@@ -101,15 +102,15 @@ export function LeftoverStep() {
           onOpenChange={setSheetOpen}
           title={`Into ${piggy.name}`}
           initial={left}
-          hint={`Up to ${formatAmount(left)}`}
+          hint={`Up to ${shownAmount(left)}`}
           onSave={(amount) => {
             if (moveLeftoverToPiggy(month.key, piggy.id, amount)) {
               toast.show({
                 tone: "success",
-                message: `${formatAmount(amount)} moved to ${piggy.name}`,
+                message: `${shownAmount(amount)} moved to ${piggy.name}`,
               });
             } else {
-              toast.show({ tone: "warning", message: `You can move up to ${formatAmount(left)}.` });
+              toast.show({ tone: "warning", message: `You can move up to ${shownAmount(left)}.` });
             }
           }}
         />

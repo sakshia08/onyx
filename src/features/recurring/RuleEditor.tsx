@@ -1,3 +1,4 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -10,7 +11,7 @@ import { TextField } from "@/components/TextField";
 import { Toggle } from "@/components/Toggle";
 import { useToast } from "@/components/toast-context";
 import { dayInMonth } from "@/domain/dates";
-import { formatAmount } from "@/domain/money";
+
 import { missedWhenCreated, ruleProblem, type RuleDraft } from "@/domain/recurring";
 import { bucketsForHome } from "@/domain/setup";
 import type { RecurringRule } from "@/domain/types";
@@ -83,7 +84,7 @@ function RuleForm({ existing }: { existing: RecurringRule | undefined }) {
       toast.show({
         tone: "info",
         duration: 10_000,
-        message: `${rule.name}'s day has passed this month. Log ${formatAmount(rule.amount)} now?`,
+        message: `${rule.name}'s day has passed this month. Log ${shownAmount(rule.amount)} now?`,
         action: {
           label: "Log",
           onAction: () => {

@@ -26,6 +26,7 @@ export function AmountInputDisplay({
         <Amount
           value={result.value}
           size="display"
+          reveal
           className={cn("mt-1 rounded-inner px-2", selected && "bg-accent/25")}
         />
       ) : (

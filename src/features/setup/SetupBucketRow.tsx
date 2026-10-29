@@ -1,8 +1,9 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { GripVertical } from "lucide-react";
 import { Reorder, useDragControls } from "motion/react";
 import { Amount } from "@/components/Amount";
 import { bucketTint } from "@/components/bucket-color";
-import { formatAmount, type Paise } from "@/domain/money";
+import { type Paise } from "@/domain/money";
 import type { Bucket, RecurringRule } from "@/domain/types";
 
 /** A bucket in setup: drag handle, emoji, name and kind, and its amount. Tap to edit. */
@@ -75,15 +76,15 @@ export function SetupBucketRow({
             <button
               type="button"
               onClick={() => onUseAverage?.(average)}
-              aria-label={`Use the average, ${formatAmount(average)}`}
+              aria-label={`Use the average, ${shownAmount(average)}`}
               className="hit-44 rounded-pill bg-surface-2 px-2.5 py-1 text-caption text-text-2"
             >
-              Avg {formatAmount(average)}
+              Avg {shownAmount(average)}
             </button>
           )}
           {hints?.recurring.map((r) => (
             <span key={r.id} className="text-caption text-text-3">
-              {r.name} {formatAmount(r.amount)} recurring
+              {r.name} {shownAmount(r.amount)} recurring
             </span>
           ))}
         </div>

@@ -1,5 +1,6 @@
+import { useReduceMotion } from "@/lib/reduce-motion";
 import { X } from "lucide-react";
-import { useReducedMotion } from "motion/react";
+
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/Button";
 import type { MonthRecap } from "@/domain/recap";
@@ -29,7 +30,7 @@ interface RecapStoriesProps {
  */
 export function RecapStories({ recap, finishLabel, onFinish, onClose }: RecapStoriesProps) {
   const backupStep = useAppStore((s) => s.data.settings.monthlyBackupStep);
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReduceMotion();
   const scroller = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
 

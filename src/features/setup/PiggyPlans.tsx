@@ -1,9 +1,10 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { useState } from "react";
 import { Amount } from "@/components/Amount";
 import { AmountSheet } from "@/components/AmountSheet";
 import { SectionHeader } from "@/components/SectionHeader";
 import { dayKeyOfDate } from "@/domain/dates";
-import { formatAmount } from "@/domain/money";
+
 import { suggestedThisMonth } from "@/domain/piggy";
 import type { ID, PiggyPlan } from "@/domain/types";
 import { useAppStore } from "@/store";
@@ -50,7 +51,7 @@ export function PiggyPlans({
                 <span className="truncate text-body text-text-1">{piggy.name}</span>
                 <span className="text-caption text-text-3">
                   {suggested !== null
-                    ? `Suggested ${formatAmount(suggested)}`
+                    ? `Suggested ${shownAmount(suggested)}`
                     : "No date: any amount"}
                 </span>
               </span>

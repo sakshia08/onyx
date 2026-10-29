@@ -152,3 +152,24 @@ describe("restore and undo restore (PRD §8.11)", () => {
     expect(reopened.store.getState().data.months["2026-11"]?.totalBudget).toBe(6_000_037);
   });
 });
+
+describe("erase all data (PRD §8.12)", () => {
+  it("goes back to a brand-new install, and removes the safety copy too", async () => {
+    const k = keys();
+    const app = createAppStore(k);
+    await settled(app);
+    app.store.getState().update(() => sampleState());
+    await app.store.getState().restore(createEmptyState(new Date()));
+    expect(await app.store.getState().safetyCopyTakenAt()).not.toBeNull();
+
+    await app.store.getState().eraseEverything();
+    expect(app.store.getState().data.months).toEqual({});
+    expect(app.store.getState().data.piggies).toEqual([]);
+    expect(await app.store.getState().safetyCopyTakenAt()).toBeNull();
+    expect(await app.store.getState().undoRestore()).toBe(false);
+    await flush();
+    const reopened = createAppStore(k);
+    await settled(reopened);
+    expect(reopened.store.getState().data.months).toEqual({});
+  });
+});

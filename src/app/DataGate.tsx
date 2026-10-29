@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useToast } from "@/components/toast-context";
 import { askToKeepData } from "@/lib/device";
-import { useSaveStatus } from "@/store";
+import { appStore, useSaveStatus } from "@/store";
+import { privacyStore } from "@/store/privacy";
 import { LoadErrorScreen } from "./LoadErrorScreen";
 import { Splash } from "./Splash";
 
@@ -12,9 +13,16 @@ export function DataGate({ children }: { children: React.ReactNode }) {
   const saveFailed = useSaveStatus((s) => s.saveFailed);
   const toast = useToast();
 
-  // Once data has loaded, ask iOS to keep it (PRD §8.1)
+  // Once data has loaded: ask iOS to keep it (PRD §8.1), lock if there's a PIN, and hide
+  // amounts if that's the setting (PRD §8.10)
   useEffect(() => {
-    if (hydrated) void askToKeepData();
+    if (!hydrated) return;
+    void askToKeepData();
+    const { settings } = appStore.getState().data;
+    privacyStore.setState({
+      locked: settings.pin !== undefined,
+      amountsHidden: settings.hideAmountsOnOpen,
+    });
   }, [hydrated]);
 
   useEffect(() => {

@@ -63,7 +63,10 @@ import type {
   Piggy,
   PiggyTxn,
   RecurringRule,
+  Favorite,
+  Settings,
 } from "@/domain/types";
+import type { StoredPin } from "@/domain/pin";
 import { newId } from "@/lib/id";
 import { appStore } from "./index";
 
@@ -414,5 +417,53 @@ export function putBackRule(rule: RecurringRule): void {
   appStore.getState().update((d) => ({
     ...d,
     recurring: [...d.recurring.filter((r) => r.id !== rule.id), rule],
+  }));
+}
+
+// ── Settings (PRD §8.12) ─────────────────────────────────────────────────
+
+export function changeSettings(change: Partial<Omit<Settings, "pin">>): void {
+  appStore.getState().update((d) => ({ ...d, settings: { ...d.settings, ...change } }));
+}
+
+/** Sets or removes the PIN (stored only as a hash, PRD §8.10). */
+export function setStoredPin(pin: StoredPin | null): void {
+  appStore.getState().update((d) => {
+    const settings: Settings = { ...d.settings };
+    if (pin === null) delete settings.pin;
+    else settings.pin = pin;
+    return { ...d, settings };
+  });
+}
+
+export function saveFavorite(favorite: Favorite): void {
+  appStore.getState().update((d) => ({
+    ...d,
+    favorites: d.favorites.map((f) =>
+      f.id === favorite.id ? { ...favorite, label: favorite.label.trim() } : f,
+    ),
+  }));
+}
+
+export function deleteFavorite(id: ID): Favorite | null {
+  const removed = appStore.getState().data.favorites.find((f) => f.id === id) ?? null;
+  appStore.getState().update((d) => ({ ...d, favorites: d.favorites.filter((f) => f.id !== id) }));
+  return removed;
+}
+
+export function putBackFavorite(favorite: Favorite): void {
+  appStore.getState().update((d) => ({
+    ...d,
+    favorites: [...d.favorites.filter((f) => f.id !== favorite.id), favorite].sort(
+      (a, b) => a.order - b.order,
+    ),
+  }));
+}
+
+/** Drag to reorder favorites: the new order is saved as 0, 1, 2… */
+export function reorderFavorites(ids: readonly ID[]): void {
+  appStore.getState().update((d) => ({
+    ...d,
+    favorites: d.favorites.map((f) => ({ ...f, order: Math.max(0, ids.indexOf(f.id)) })),
   }));
 }

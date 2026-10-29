@@ -5,6 +5,7 @@ import { PigIllustration } from "@/components/PigIllustration";
 import { TextField } from "@/components/TextField";
 import { setProfileName } from "@/store/actions";
 import { useAppStore } from "@/store";
+import { RestoreButton } from "../settings/RestoreButton";
 import { FullScreen } from "../setup/FullScreen";
 
 /** First launch (PRD §8.1): the promise, an optional name, then setup. */
@@ -31,10 +32,15 @@ export function Welcome() {
 
   return (
     <FullScreen
+      footerSpace={160}
       footer={
-        <Button size="lg" className="w-full" onClick={next}>
-          Continue
-        </Button>
+        <div className="flex flex-col gap-1">
+          <Button size="lg" className="w-full" onClick={next}>
+            Continue
+          </Button>
+          {/* After erasing (e.g. a forgotten PIN), or on a new phone: bring a backup back */}
+          <RestoreButton variant="ghost" />
+        </div>
       }
     >
       <div className="flex flex-1 flex-col items-center justify-center py-8 text-center">

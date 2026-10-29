@@ -1,7 +1,9 @@
-import { animate, useReducedMotion } from "motion/react";
+import { useReduceMotion } from "@/lib/reduce-motion";
+import { animate } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { amountParts, spokenAmount, type Paise, type SignDisplay } from "@/domain/money";
 import { cn } from "@/lib/cn";
+import { usePrivacy } from "@/store/privacy";
 
 type AmountSize = "hero" | "display" | "title" | "headline" | "body" | "callout" | "caption";
 type AmountTone = "auto" | "default" | "positive" | "negative" | "inherit";
@@ -35,6 +37,8 @@ interface AmountProps {
   animated?: boolean;
   /** Override what VoiceOver reads, e.g. "Over by 500 rupees". */
   label?: string;
+  /** Always show the figure, even with amounts hidden (the keypad's own display). */
+  reveal?: boolean;
   className?: string;
 }
 
@@ -46,13 +50,35 @@ export function Amount({
   rounded = false,
   animated = false,
   label,
+  reveal = false,
   className,
 }: AmountProps) {
   const shown = useCountingValue(value, animated);
+  const hidden = usePrivacy((p) => p.amountsHidden) && !reveal;
   const parts = amountParts(shown, signDisplay);
   const resolvedTone = tone === "auto" ? (value < 0 ? "negative" : "default") : tone;
   // On colored or inherited text, dim the ₹ and paise with opacity instead of gray
   const colored = resolvedTone !== "default";
+
+  if (hidden) {
+    // The eye is on (PRD §8.10): "₹ ••••" everywhere, and VoiceOver says so
+    return (
+      <span
+        className={cn(
+          "inline-flex items-baseline whitespace-nowrap",
+          sizeClass[size],
+          "text-text-2",
+          className,
+        )}
+      >
+        <span className="sr-only">Amount hidden</span>
+        <span aria-hidden="true">
+          <span className="mr-[0.06em] text-[0.55em] font-medium">₹</span>
+          <span className="text-[0.6em] tracking-[0.12em]">••••</span>
+        </span>
+      </span>
+    );
+  }
 
   return (
     <span
@@ -88,7 +114,7 @@ export function Amount({
 
 /** Animates from the previous value to the new one, always landing on whole paise. */
 function useCountingValue(target: Paise, enabled: boolean): Paise {
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReduceMotion();
   const [shown, setShown] = useState(target);
   const from = useRef(target);
 

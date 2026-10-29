@@ -4,11 +4,13 @@ interface FullScreenProps {
   children: React.ReactNode;
   /** Pinned to the bottom on glass, above the home indicator. */
   footer?: React.ReactNode;
+  /** Room left for the footer, in px (two buttons need more). */
+  footerSpace?: number;
   className?: string;
 }
 
 /** A screen without the tab bar (welcome, setup): safe areas, top glow, sticky footer. */
-export function FullScreen({ children, footer, className }: FullScreenProps) {
+export function FullScreen({ children, footer, footerSpace = 104, className }: FullScreenProps) {
   return (
     <>
       <div aria-hidden="true" className="screen-glow" />
@@ -20,7 +22,7 @@ export function FullScreen({ children, footer, className }: FullScreenProps) {
         style={{
           paddingTop: "calc(var(--safe-top) + 12px)",
           paddingBottom: footer
-            ? "calc(max(var(--safe-bottom), 16px) + 104px)"
+            ? `calc(max(var(--safe-bottom), 16px) + ${String(footerSpace)}px)`
             : "max(var(--safe-bottom), 16px)",
         }}
       >

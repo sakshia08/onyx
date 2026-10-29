@@ -1,3 +1,4 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router";
@@ -9,7 +10,7 @@ import { SegmentedControl } from "@/components/SegmentedControl";
 import { TextField } from "@/components/TextField";
 import { Toggle } from "@/components/Toggle";
 import { dayKeyOfDate } from "@/domain/dates";
-import { formatAmount, type Paise } from "@/domain/money";
+import { type Paise } from "@/domain/money";
 import {
   MAX_PIGGY_NAME,
   monthlyPreview,
@@ -234,7 +235,7 @@ function EditorForm({ existing }: { existing: Piggy | undefined }) {
           {preview
             ? preview.perMonth === 0
               ? "Already fully saved."
-              : `${formatAmount(preview.perMonth)}/month for ${String(preview.months)} ${preview.months === 1 ? "month" : "months"}`
+              : `${shownAmount(preview.perMonth)}/month for ${String(preview.months)} ${preview.months === 1 ? "month" : "months"}`
             : "No date: just progress, no monthly amount."}
         </p>
       </div>

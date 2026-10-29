@@ -1,9 +1,10 @@
-import { useReducedMotion } from "motion/react";
+import { shownAmount } from "@/lib/shown-amount";
+import { useReduceMotion } from "@/lib/reduce-motion";
 import { useState } from "react";
 import { AmountSheet } from "@/components/AmountSheet";
 import { useToast } from "@/components/toast-context";
 import { dayKeyOfDate } from "@/domain/dates";
-import { formatAmount } from "@/domain/money";
+
 import { piggyBalance, toStashThisMonth } from "@/domain/piggy";
 import type { ID, Piggy } from "@/domain/types";
 import { celebrate } from "@/lib/celebrate";
@@ -22,7 +23,7 @@ const CELEBRATE_AFTER_MS = 900;
 export function useStash() {
   const toast = useToast();
   const month = useActiveMonth();
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReduceMotion();
   const [target, setTarget] = useState<Piggy | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [goal, setGoal] = useState<Piggy | null>(null);
@@ -42,7 +43,7 @@ export function useStash() {
     bump(piggy.id, "stash");
     toast.show({
       tone: "success",
-      message: `${formatAmount(amount)} stashed into ${piggy.name}`,
+      message: `${shownAmount(amount)} stashed into ${piggy.name}`,
       action: {
         label: "Undo",
         onAction: () => {
@@ -70,7 +71,7 @@ export function useStash() {
           onOpenChange={setSheetOpen}
           title={`Stash into ${target.name}`}
           initial={toStashThisMonth(target, month ?? undefined, today)}
-          hint={`${formatAmount(piggyBalance(target))} saved so far. Comes out of this month.`}
+          hint={`${shownAmount(piggyBalance(target))} saved so far. Comes out of this month.`}
           onSave={(amount) => {
             save(target, amount);
           }}

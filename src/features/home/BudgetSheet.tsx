@@ -1,3 +1,4 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { useState } from "react";
 import { AmountInputDisplay } from "@/components/AmountInputDisplay";
 import { Keypad } from "@/components/Keypad";
@@ -69,7 +70,7 @@ function BudgetForm({ month, onDone }: { month: Month; onDone: () => void }) {
           onDone();
           toast.show({
             tone: "success",
-            message: `Budget is now ${formatAmount(result.value)}`,
+            message: `Budget is now ${shownAmount(result.value)}`,
             action: {
               label: "Undo",
               onAction: () => {

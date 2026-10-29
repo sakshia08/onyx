@@ -1,3 +1,4 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { Pencil } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { Screen } from "@/app/Screen";
@@ -7,7 +8,7 @@ import { Chip } from "@/components/Chip";
 import { SectionHeader } from "@/components/SectionHeader";
 import { dayLabel } from "@/domain/activity";
 import { dayKeyOf, dayKeyOfDate } from "@/domain/dates";
-import { formatAmount } from "@/domain/money";
+
 import { piggyBalance, toStashThisMonth } from "@/domain/piggy";
 import { piggySummary } from "@/domain/piggy-actions";
 import type { Piggy } from "@/domain/types";
@@ -92,7 +93,7 @@ export function PiggyDetail() {
               stashFlow.start(piggy);
             }}
           >
-            {toStash > 0 ? `Stash ${formatAmount(toStash)}` : "Stash"}
+            {toStash > 0 ? `Stash ${shownAmount(toStash)}` : "Stash"}
           </Button>
           <div className="flex gap-2">
             <Button
@@ -162,7 +163,7 @@ function DoneSummary({ piggy, others }: { piggy: Piggy; others: Piggy[] }) {
       </div>
       {left > 0 && others.length > 0 && (
         <div>
-          <p className="text-callout text-text-2">Move {formatAmount(left)} to another piggy:</p>
+          <p className="text-callout text-text-2">Move {shownAmount(left)} to another piggy:</p>
           <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Move what's left to">
             {others.map((o) => (
               <Chip

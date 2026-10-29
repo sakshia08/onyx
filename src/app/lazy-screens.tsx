@@ -53,6 +53,16 @@ export const MonthDetail = lazy(() =>
   import("@/features/insights/MonthDetail").then((m) => ({ default: m.MonthDetail })),
 );
 
+export const PinSettings = lazy(() =>
+  import("@/features/settings/PinSettings").then((m) => ({ default: m.PinSettings })),
+);
+export const BackupScreen = lazy(() =>
+  import("@/features/settings/BackupScreen").then((m) => ({ default: m.BackupScreen })),
+);
+export const FavoritesScreen = lazy(() =>
+  import("@/features/settings/FavoritesScreen").then((m) => ({ default: m.FavoritesScreen })),
+);
+
 export function Lazy({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={null}>{children}</Suspense>;
 }

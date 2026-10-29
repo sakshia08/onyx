@@ -1,8 +1,9 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { useMemo } from "react";
 import { useToast, type ToastOptions } from "@/components/toast-context";
 import { dayKeyOfDate } from "@/domain/dates";
 import type { HeadsUpToast } from "@/domain/entries";
-import { formatAmount } from "@/domain/money";
+
 import { favoriteKey, shouldSuggestFavorite } from "@/domain/suggestions";
 import type { Entry, Piggy } from "@/domain/types";
 import {
@@ -56,7 +57,7 @@ export function useEntryFeedback() {
       rememberFavoriteAsked(favoriteKey(entry.note, entry.amount, entry.bucketId));
       toast.queue({
         tone: "info",
-        message: `Save “${entry.note.trim()} · ${formatAmount(entry.amount)}” as a favorite?`,
+        message: `Save “${entry.note.trim()} · ${shownAmount(entry.amount)}” as a favorite?`,
         duration: 8000,
         action: {
           label: "Save",
@@ -72,8 +73,8 @@ export function useEntryFeedback() {
         const name = bucketOf(entry)?.name ?? "bucket";
         // "Starbucks ₹500 logged to Food", or without a name "₹500 logged to Food"
         const what = entry.note?.trim()
-          ? `${entry.note.trim()} ${formatAmount(entry.amount)}`
-          : formatAmount(entry.amount);
+          ? `${entry.note.trim()} ${shownAmount(entry.amount)}`
+          : shownAmount(entry.amount);
         const message =
           entry.type === "refund" ? `${what} money back to ${name}` : `${what} logged to ${name}`;
         toast.show({
@@ -101,7 +102,7 @@ export function useEntryFeedback() {
       },
 
       spentFromPiggy(piggy: Piggy, amount: number, note: string, txnId: string) {
-        const what = note !== "" ? `${note} ${formatAmount(amount)}` : formatAmount(amount);
+        const what = note !== "" ? `${note} ${shownAmount(amount)}` : shownAmount(amount);
         toast.show({
           tone: "success",
           message: `${what} spent from ${piggy.name}`,

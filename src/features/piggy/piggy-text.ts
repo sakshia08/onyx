@@ -1,4 +1,5 @@
-import { formatAmount } from "@/domain/money";
+import { shownAmount } from "@/lib/shown-amount";
+
 import type { PiggyStatus } from "@/domain/piggy";
 
 /** The status pill (PRD §8.6): On track, Behind by ₹2,000, Done 🎉 or Date passed. */
@@ -12,7 +13,7 @@ export function statusLabel(status: PiggyStatus): {
     case "on-track":
       return { text: "On track", tone: "good" };
     case "behind":
-      return { text: `Behind by ${formatAmount(status.by)}`, tone: "warn" };
+      return { text: `Behind by ${shownAmount(status.by)}`, tone: "warn" };
     case "date-passed":
       return { text: "Date passed", tone: "warn" };
     case "no-date":

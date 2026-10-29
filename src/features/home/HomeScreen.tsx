@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Screen } from "@/app/Screen";
 import { BucketVial } from "@/components/BucketVial";
+import { EyeButton } from "@/components/EyeButton";
 import { MonthTank } from "@/components/MonthTank";
 import { SectionHeader } from "@/components/SectionHeader";
 import { recentEntries } from "@/domain/activity";
@@ -37,9 +38,12 @@ export function HomeScreen() {
 
   return (
     <Screen>
-      <header>
-        <p className="text-callout text-text-2">{greeting(now.getHours(), name)}</p>
-        <h1 className="text-title text-text-1">{monthName(month.key)}</h1>
+      <header className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-callout text-text-2">{greeting(now.getHours(), name)}</p>
+          <h1 className="text-title text-text-1">{monthName(month.key)}</h1>
+        </div>
+        <EyeButton />
       </header>
 
       <MonthTank

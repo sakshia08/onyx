@@ -1,4 +1,5 @@
-import { animate, motion, useMotionValue, useReducedMotion } from "motion/react";
+import { useReduceMotion } from "@/lib/reduce-motion";
+import { animate, motion, useMotionValue } from "motion/react";
 import { useEffect, useId, useRef } from "react";
 import { fillSpring } from "@/lib/motion";
 import { cn } from "@/lib/cn";
@@ -57,7 +58,7 @@ export function PigIllustration({
   width = 240,
   className,
 }: PigIllustrationProps) {
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReduceMotion();
   const id = useId().replace(/:/g, "");
   const level = useMotionValue(levelFor(progress));
   const bodyRef = useRef<SVGGElement>(null);

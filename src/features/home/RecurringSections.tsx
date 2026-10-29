@@ -1,3 +1,4 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { CircleAlert } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { Amount } from "@/components/Amount";
@@ -7,7 +8,7 @@ import { bucketTint } from "@/components/bucket-color";
 import { useToast } from "@/components/toast-context";
 import { format } from "date-fns";
 import { fromISODate, isoForDay } from "@/domain/dates";
-import { formatAmount, sumPaise } from "@/domain/money";
+import { sumPaise } from "@/domain/money";
 import { comingUp, dueToAsk } from "@/domain/recurring";
 import type { Month } from "@/domain/types";
 import { logRule, skipRule } from "@/store/actions";
@@ -59,7 +60,7 @@ export function DueNow({ month, today }: { month: Month; today: number }) {
                   logRule(rule.id);
                   toast.show({
                     tone: "success",
-                    message: `${rule.name} ${formatAmount(rule.amount)} logged`,
+                    message: `${rule.name} ${shownAmount(rule.amount)} logged`,
                   });
                 }}
               >

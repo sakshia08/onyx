@@ -1,5 +1,6 @@
+import { useReduceMotion } from "@/lib/reduce-motion";
 import { CircleAlert, CircleCheck, Info, TriangleAlert } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { spring, fade } from "@/lib/motion";
 import { cn } from "@/lib/cn";
@@ -25,7 +26,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ActiveToast[]>([]);
   const toast = toasts[0] ?? null;
   const nextId = useRef(1);
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReduceMotion();
 
   const dismiss = useCallback(() => {
     setToasts((list) => list.slice(1));

@@ -1,4 +1,4 @@
-import { get as idbGet, set as idbSet } from "idb-keyval";
+import { del as idbDel, get as idbGet, set as idbSet } from "idb-keyval";
 import { persist } from "zustand/middleware";
 import { createStore } from "zustand/vanilla";
 import { prepareRestore, type SafetyCopy } from "@/domain/backup";
@@ -16,6 +16,10 @@ export interface AppStore {
   restore: (incoming: AppState) => Promise<void>;
   /** Brings the safety copy back. False if there isn't a usable one. */
   undoRestore: () => Promise<boolean>;
+  /** When the safety copy was taken, if there is one (for "Undo restore"). */
+  safetyCopyTakenAt: () => Promise<string | null>;
+  /** "Erase all data": back to a brand-new install. The safety copy goes too. */
+  eraseEverything: () => Promise<void>;
 }
 
 class LoadFailure extends Error {
@@ -71,6 +75,16 @@ export function createAppStore({
           // The safety copy must be saved before anything is replaced
           await idbSet(safetyKey, safetyCopy);
           set({ data: state });
+        },
+
+        safetyCopyTakenAt: async () => {
+          const copy = await idbGet<SafetyCopy>(safetyKey);
+          return copy?.takenAt ?? null;
+        },
+
+        eraseEverything: async () => {
+          await idbDel(safetyKey);
+          set({ data: createEmptyState(now()) });
         },
 
         undoRestore: async () => {

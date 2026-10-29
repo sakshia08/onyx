@@ -1,3 +1,4 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { useRef, useState } from "react";
@@ -5,11 +6,12 @@ import { useNavigate } from "react-router";
 import { Screen } from "@/app/Screen";
 import { Amount } from "@/components/Amount";
 import { Button } from "@/components/Button";
+import { EyeButton } from "@/components/EyeButton";
 import { PigIcon } from "@/components/PigIcon";
 import { ProgressBar } from "@/components/ProgressBar";
 import { SectionHeader } from "@/components/SectionHeader";
 import { dayKeyOfDate } from "@/domain/dates";
-import { formatAmount } from "@/domain/money";
+
 import { plannedThisMonth, stashedIntoThisMonth, toStashThisMonth } from "@/domain/piggy";
 import type { Piggy } from "@/domain/types";
 import { tapScale } from "@/lib/motion";
@@ -42,16 +44,19 @@ export function PiggyScreen() {
           Piggy
           <PigIcon aria-hidden="true" className="size-7 text-piggy-strong" strokeWidth={1.8} />
         </h1>
-        <Button
-          variant="secondary"
-          size="md"
-          onClick={() => {
-            void navigate("/piggy/new");
-          }}
-        >
-          <Plus aria-hidden="true" className="size-4" strokeWidth={2.5} />
-          New
-        </Button>
+        <div className="flex items-center gap-2">
+          <EyeButton />
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => {
+              void navigate("/piggy/new");
+            }}
+          >
+            <Plus aria-hidden="true" className="size-4" strokeWidth={2.5} />
+            New
+          </Button>
+        </div>
       </header>
 
       {active.length === 0 ? (
@@ -199,7 +204,7 @@ function Carousel({
             stashFlow.start(current);
           }}
         >
-          {toStash > 0 ? `Stash ${formatAmount(toStash)}` : "Stash"}
+          {toStash > 0 ? `Stash ${shownAmount(toStash)}` : "Stash"}
         </Button>
         <Button
           variant="secondary"

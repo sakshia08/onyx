@@ -1,4 +1,5 @@
-import { AnimatePresence, motion, useDragControls, useReducedMotion } from "motion/react";
+import { useReduceMotion } from "@/lib/reduce-motion";
+import { AnimatePresence, motion, useDragControls } from "motion/react";
 import { Dialog } from "radix-ui";
 import { fade, spring } from "@/lib/motion";
 import { useKeyboardInset } from "@/lib/use-keyboard-inset";
@@ -30,7 +31,7 @@ export function Sheet({
   className,
 }: SheetProps) {
   const dragControls = useDragControls();
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReduceMotion();
   // Sit above the iOS keyboard while typing (PRD §10.8)
   const keyboard = useKeyboardInset();
   const hidden = reduceMotion ? { opacity: 0 } : { y: "100%" };

@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from "motion/react";
+import { useReduceMotion } from "@/lib/reduce-motion";
+import { motion } from "motion/react";
 import { useId } from "react";
 import { fillSpring } from "@/lib/motion";
 import { cn } from "@/lib/cn";
@@ -41,7 +42,7 @@ export function LiquidFill({
   wavelength = 80,
   className,
 }: LiquidFillProps) {
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReduceMotion();
   const id = useId().replace(/:/g, "");
   const clamped = Math.min(1, Math.max(0, level));
   const surface = clamped === 0 ? height + amplitude * 2 : height - clamped * height;

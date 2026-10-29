@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **Phase 7 done** (waiting for the user's go-ahead to start Phase 8, the last phase). Phase 4's airplane-mode check on the iPhone is still to do.
+**Current status:** **All 8 phases built (version 1.0.0).** Waiting for the user to push and test on the iPhone: backup round trip (Phase 8) and airplane mode (Phase 4). 244 unit, 69 screen and 5 PWA tests passing.
 
 ## Checklist (PRD §14)
 
@@ -93,13 +93,13 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] Playwright: `tests/e2e/phase-7.spec.ts`. Dev seed now has a closed October
 
 ### Phase 8: Privacy, backup and settings
-- [ ] Privacy blur (§8.10)
-- [ ] PIN lock
-- [ ] Backup and restore, safety copy, undo restore (§8.11)
-- [ ] Settings screen (§8.12)
-- [ ] Test backups on the real iPhone (save to Files, erase, restore, undo restore)
-- [ ] Final polish, accessibility and performance pass
-- [ ] Redeploy
+- [x] Privacy blur (§8.10): the eye on Home and Piggy; amounts show as "₹ ••••" everywhere (VoiceOver says "Amount hidden"); "Hide amounts when Onyx opens"
+- [x] PIN lock: 4 digits, PBKDF2 (210,000 rounds, random salt) via Web Crypto; locks on launch and on return after Immediately / 1 min / 5 min; 5 wrong tries → 30-second wait; "Forgot PIN?" explains erase + restore; "a privacy screen, not encryption"
+- [x] Backup and restore (§8.11): back up now (share sheet, or download), last backup date (amber after 35 days or never), monthly step toggle, restore with zod check and preview, "Replace everything", undo restore, storage used. Restore is also on Welcome, for after an erase or on a new phone
+- [x] Settings screen (§8.12): name, recurring, favorites manager (drag to reorder, edit, delete with Undo), privacy, backup, motion (follow iPhone / reduce: `MotionConfig` "always" + `data-motion`), erase all data (type ERASE; removes the safety copy too), about (version from package.json)
+- [ ] **Test backups on the real iPhone** (save to Files, erase, restore, undo restore): the user's step
+- [x] Final polish, accessibility and performance pass: launch JS 240 KB gzipped (budget 250); every icon button has a VoiceOver label; tabs announce the current one
+- [ ] **Redeploy**: the user pushes; Vercel redeploys. Version 1.0.0
 
 ## Decisions
 
@@ -119,6 +119,13 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **tailwind-merge** is taught our token names in `src/lib/cn.ts` (otherwise it drops sizes like `text-display`). A test guards this.
 - **Tailwind defaults switched off** (colors, text sizes, radii, shadows), so only design tokens can be used.
 - **Design direction "Liquid":** the first design copied the inspo too closely; the user picked "Liquid" from three concepts (Liquid, Ledger, Dial). PRD §8.3, §9 and §10 updated. Tokens: `--accent-a/b/c` replaced by `--liquid` and `--accent`; new `text-hero`, `rounded-tank`, `rounded-vial`.
+- **Privacy and backup decisions (Phase 8):**
+  - The eye hides amounts in buttons and toasts too, except the keypad's own display while typing.
+  - The lock screen appears on launch whenever a PIN is set (the timeout only applies when returning to the app).
+  - The cooldown after 5 wrong tries lasts for this session (closing and reopening Onyx starts the count again).
+  - "Erase all data" also deletes the restore safety copy, so a forgotten PIN can't be got around with "Undo restore".
+  - Restore lives in Settings → Backup and on the Welcome screen.
+  - Possible later saving: the data check could use `zod/mini` (smaller) if the launch size ever passes 250 KB.
 - **Insights decisions (Phase 7):**
   - A day's bar is expenses minus money back in spend buckets. A day with more money back than spent shows its tag as "+₹X" in green, never as a red minus.
   - A past month's chart starts on its last day; the current month's on today.
@@ -156,7 +163,7 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **Save status lives in its own small store**, so reporting a failed save can never trigger another save.
 - **Heads-ups:** if one entry jumps past both 80% and 100%, only the 100% toast shows, and both are recorded.
 - **Yearly piggy cycles** skip ahead several years if the app wasn't opened; a 29 Feb target lands on 28 Feb in non-leap years.
-- **Bundle:** 233 KB gzipped at launch after Phase 6 (budget 250; getting close: Phase 8 should check what can load later). About 231 KB after Phase 4 (welcome, setup, bucket detail and activity now load on demand; budget 250). Was 201 KB after Phase 1; zod added ~35 KB. `zod/mini` is an option later if size gets tight.
+- **Bundle:** 240 KB gzipped at launch at 1.0.0 (budget 250). 233 KB after Phase 6. About 231 KB after Phase 4 (welcome, setup, bucket detail and activity now load on demand; budget 250). Was 201 KB after Phase 1; zod added ~35 KB. `zod/mini` is an option later if size gets tight.
 - **Save bucket over plan:** big number shows "+₹1,000" in normal white, with "extra put away" (user confirmed).
 - **Status-bar fade:** a soft gradient under the status bar so scrolled content doesn't clash with the clock.
 - **Toast** is near-solid (`surface-2` at 95% + blur), not glass, so its text stays readable over busy content.

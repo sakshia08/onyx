@@ -1,3 +1,4 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { useState } from "react";
 import { AmountInputDisplay } from "@/components/AmountInputDisplay";
 import { Chip } from "@/components/Chip";
@@ -57,7 +58,7 @@ export function BudgetStep({
             onSameAsLast(previous);
           }}
         >
-          Same as {monthName(previous.key)} · {formatAmount(previous.totalBudget)}
+          Same as {monthName(previous.key)} · {shownAmount(previous.totalBudget)}
         </Chip>
       )}
 

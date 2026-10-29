@@ -2,6 +2,9 @@ import { createHashRouter, type RouteObject } from "react-router";
 import { HomeScreen } from "@/features/home/HomeScreen";
 import {
   ActivityScreen,
+  BackupScreen,
+  FavoritesScreen,
+  PinSettings,
   BucketDetail,
   InsightsScreen,
   MonthDetail,
@@ -206,6 +209,13 @@ export const router = createHashRouter([
           </Lazy>
         ),
       },
+      ...(
+        [
+          ["settings/pin", <PinSettings key="pin" />],
+          ["settings/backup", <BackupScreen key="backup" />],
+          ["settings/favorites", <FavoritesScreen key="favorites" />],
+        ] as const
+      ).map(([path, screen]) => ({ path, element: <Lazy>{screen}</Lazy> })),
       {
         path: "recurring",
         element: (

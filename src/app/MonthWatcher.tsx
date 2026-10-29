@@ -1,7 +1,8 @@
+import { shownAmount } from "@/lib/shown-amount";
 import { useEffect } from "react";
 import { useToast } from "@/components/toast-context";
 import { monthName } from "@/domain/dates";
-import { formatAmount } from "@/domain/money";
+
 import { checkTheMonth, runRecurringNow } from "@/store/actions";
 import { useAppStore } from "@/store";
 
@@ -34,7 +35,7 @@ export function MonthWatcher() {
           tone: "success",
           message:
             logged.length === 1
-              ? `${first.name} ${formatAmount(first.amount)} logged automatically`
+              ? `${first.name} ${shownAmount(first.amount)} logged automatically`
               : `${String(logged.length)} recurring expenses logged automatically`,
         });
       }
