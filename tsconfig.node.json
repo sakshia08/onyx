@@ -15,5 +15,5 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["vite.config.ts", "pwa-assets.config.ts", "playwright.config.ts", "tests"]
+  "include": ["vite.config.ts", "pwa-assets.config.ts", "playwright.config.ts", "playwright.pwa.config.ts", "tests"]
 }

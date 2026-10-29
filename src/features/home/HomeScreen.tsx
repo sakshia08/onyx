@@ -6,7 +6,7 @@ import { MonthTank } from "@/components/MonthTank";
 import { SectionHeader } from "@/components/SectionHeader";
 import { recentEntries } from "@/domain/activity";
 import { bucketUsed } from "@/domain/budget";
-import { dayInMonth, daysInMonth, daysLeft, monthName } from "@/domain/dates";
+import { dayInMonth, dayKeyOfDate, daysInMonth, daysLeft, monthName } from "@/domain/dates";
 import { greeting } from "@/domain/greeting";
 import { bucketsForHome } from "@/domain/setup";
 import { monthRemaining, monthUsed } from "@/domain/totals";
@@ -17,6 +17,7 @@ import { BucketEntryRow } from "../entries/EntryList";
 import { useQuickAdd } from "../quick-add/quick-add-context";
 import { BudgetSheet } from "./BudgetSheet";
 import { QuickLogRow } from "./QuickLogRow";
+import { PiggyPeekSection } from "./PiggyPeekSection";
 import { RecentEmpty } from "./RecentEmpty";
 
 /** Home (PRD §8.3): greeting, the month tank, bucket vials and recent entries. */
@@ -56,6 +57,8 @@ export function HomeScreen() {
 
       <VialGroup title="Spend" buckets={spend} month={month} today={today} days={days} />
       <VialGroup title="Save" buckets={save} month={month} today={today} days={days} />
+
+      <PiggyPeekSection today={dayKeyOfDate(now)} />
 
       <SectionHeader
         title="Recent"

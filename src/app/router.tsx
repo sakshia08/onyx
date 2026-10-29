@@ -1,6 +1,15 @@
 import { createHashRouter, type RouteObject } from "react-router";
 import { HomeScreen } from "@/features/home/HomeScreen";
-import { ActivityScreen, BucketDetail, Lazy, SetupFlow, Welcome } from "./lazy-screens";
+import {
+  ActivityScreen,
+  BucketDetail,
+  Lazy,
+  PiggyDetail,
+  PiggyEditor,
+  PiggyScreen,
+  SetupFlow,
+  Welcome,
+} from "./lazy-screens";
 import { AppShell } from "./AppShell";
 import { RequireMonth, RequireNoMonth } from "./gates";
 import { PlaceholderScreen } from "./PlaceholderScreen";
@@ -51,6 +60,17 @@ export const router = createHashRouter([
       </RequireNoMonth>
     ),
   },
+  // Creating and editing a piggy: full screen, no tab bar
+  ...["/piggy/new", "/piggy/:id/edit"].map((path) => ({
+    path,
+    element: (
+      <RequireMonth>
+        <Lazy>
+          <PiggyEditor />
+        </Lazy>
+      </RequireMonth>
+    ),
+  })),
   {
     path: "/",
     element: (
@@ -77,7 +97,22 @@ export const router = createHashRouter([
         ),
       },
       { path: "insights", element: <PlaceholderScreen title="Insights" phase={7} /> },
-      { path: "piggy", element: <PlaceholderScreen title="Piggy" phase={5} glow="piggy" /> },
+      {
+        path: "piggy",
+        element: (
+          <Lazy>
+            <PiggyScreen />
+          </Lazy>
+        ),
+      },
+      {
+        path: "piggy/:id",
+        element: (
+          <Lazy>
+            <PiggyDetail />
+          </Lazy>
+        ),
+      },
       { path: "settings", element: <PlaceholderScreen title="Settings" phase={8} /> },
     ],
   },

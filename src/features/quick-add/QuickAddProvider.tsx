@@ -16,6 +16,11 @@ export function QuickAddProvider({ children }: { children: React.ReactNode }) {
         setRequest({ mode: "add", session: session.current, ...(bucketId ? { bucketId } : {}) });
         setOpen(true);
       },
+      openSpendFromPiggy: (piggyId: ID) => {
+        session.current += 1;
+        setRequest({ mode: "add", session: session.current, piggyId });
+        setOpen(true);
+      },
       openEdit: (entry: Entry) => {
         session.current += 1;
         setRequest({ mode: "edit", session: session.current, entry });

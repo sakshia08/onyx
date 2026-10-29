@@ -7,11 +7,12 @@ import { BUCKET_COLORS } from "@/domain/bucket-colors";
 import { monthName } from "@/domain/dates";
 import type { Paise } from "@/domain/money";
 import { unallocated } from "@/domain/totals";
-import type { Bucket, MonthKey } from "@/domain/types";
+import type { Bucket, MonthKey, PiggyPlan } from "@/domain/types";
 import { newId } from "@/lib/id";
 import { BucketEditorSheet } from "../buckets/BucketEditorSheet";
 import { BackButton } from "./BackButton";
 import { FullScreen } from "./FullScreen";
+import { PiggyPlans } from "./PiggyPlans";
 import { SetupBucketRow } from "./SetupBucketRow";
 import { UnallocatedLine } from "./UnallocatedLine";
 import { StepDots } from "./StepDots";
@@ -21,6 +22,8 @@ interface BucketsStepProps {
   budget: Paise;
   buckets: Bucket[];
   onChange: (buckets: Bucket[]) => void;
+  piggyPlans: PiggyPlan[];
+  onPlansChange: (plans: PiggyPlan[]) => void;
   onBack: () => void;
   onStart: () => void;
 }
@@ -31,12 +34,14 @@ export function BucketsStep({
   budget,
   buckets,
   onChange,
+  piggyPlans,
+  onPlansChange,
   onBack,
   onStart,
 }: BucketsStepProps) {
   const [editing, setEditing] = useState<{ bucket: Bucket; isNew: boolean } | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
-  const left = unallocated({ totalBudget: budget, buckets, piggyPlans: [] });
+  const left = unallocated({ totalBudget: budget, buckets, piggyPlans });
 
   const open = (bucket: Bucket, isNew: boolean) => {
     setEditing({ bucket, isNew });
@@ -106,6 +111,8 @@ export function BucketsStep({
         <Plus aria-hidden="true" className="size-4" strokeWidth={2.5} />
         Add bucket
       </Button>
+
+      <PiggyPlans plans={piggyPlans} onChange={onPlansChange} />
 
       {editing && (
         <BucketEditorSheet

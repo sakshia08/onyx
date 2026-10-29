@@ -23,7 +23,7 @@ test("the service worker precaches every file the app is built from", () => {
   ];
   expect(needed.filter((f) => !precached.has(f))).toEqual([]);
   // Every page load falls back to the cached app (so deep links work offline too)
-  expect(sw).toContain('NavigationRoute(e.createHandlerBoundToURL("index.html"))');
+  expect(sw).toMatch(/NavigationRoute\(\w+\.createHandlerBoundToURL\("index\.html"\)\)/);
 });
 
 test("the service worker takes control after the first visit", async ({ page }) => {

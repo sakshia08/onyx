@@ -5,6 +5,7 @@ import { AmountInputDisplay } from "@/components/AmountInputDisplay";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Keypad } from "@/components/Keypad";
+import { PigIcon } from "@/components/PigIcon";
 import { QuickLogChip } from "@/components/QuickLogChip";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { dayLabel } from "@/domain/activity";
@@ -24,7 +25,7 @@ import { bucketsForHome } from "@/domain/setup";
 import { bucketForNote, noteSuggestions } from "@/domain/suggestions";
 import type { Entry, EntryType, ID } from "@/domain/types";
 import { newId } from "@/lib/id";
-import { deleteEntry, editEntry, logEntry } from "@/store/actions";
+import { deleteEntry, editEntry, logEntry, spendFromPiggy } from "@/store/actions";
 import { useActiveMonth } from "@/store/hooks";
 import { useAppStore } from "@/store";
 import { DayPicker } from "./DayPicker";
@@ -58,6 +59,7 @@ export function QuickAddForm({
 }) {
   const month = useActiveMonth();
   const favorites = useAppStore((s) => s.data.favorites);
+  const allPiggies = useAppStore((s) => s.data.piggies);
   const months = useAppStore((s) => s.data.months);
   const feedback = useEntryFeedback();
   const [now] = useState(() => new Date());
@@ -68,6 +70,10 @@ export function QuickAddForm({
   const [fresh, setFresh] = useState(editing !== null);
   const [bucketId, setBucketId] = useState<ID | null>(
     editing?.bucketId ?? (request.mode === "add" ? (request.bucketId ?? null) : null),
+  );
+  // Spending from a piggy instead of a bucket (PRD §8.4: piggies after buckets)
+  const [piggyId, setPiggyId] = useState<ID | null>(
+    request.mode === "add" ? (request.piggyId ?? null) : null,
   );
   const [note, setNote] = useState(editing?.note ?? "");
   const [day, setDay] = useState(() =>
@@ -84,7 +90,13 @@ export function QuickAddForm({
   const buckets = [...grouped.spend, ...grouped.save];
   const today = dayInMonth(month.key, now);
   const result = evaluate(input);
-  const canSave = result.ok && bucketId !== null && buckets.some((b) => b.id === bucketId);
+  // Piggies are hidden for money back, and when editing an entry
+  const piggies =
+    type === "refund" || editing ? [] : allPiggies.filter((p) => p.status === "active");
+  const piggy = piggyId === null ? undefined : piggies.find((p) => p.id === piggyId);
+  const canSave =
+    result.ok &&
+    (piggy !== undefined || (bucketId !== null && buckets.some((b) => b.id === bucketId)));
   const suggestions = noteSuggestions(
     allEntries,
     note,
@@ -101,13 +113,23 @@ export function QuickAddForm({
   };
 
   const save = () => {
-    if (!result.ok || bucketId === null || saved) return;
+    if (!result.ok || saved) return;
     const trimmed = note.trim();
+    const date = dateForDay(month.key, day, editing ? editing.date : new Date());
+    if (piggy !== undefined) {
+      const amount = result.value;
+      const txnId = spendFromPiggy(piggy.id, amount, date, trimmed);
+      finish(() => {
+        if (txnId !== null) feedback.spentFromPiggy(piggy, amount, trimmed, txnId);
+      });
+      return;
+    }
+    if (bucketId === null) return;
     const base = {
       type,
       bucketId,
       amount: result.value,
-      date: dateForDay(month.key, day, editing ? editing.date : new Date()),
+      date,
     };
     if (editing) {
       const entry: Entry = { ...editing, ...base };
@@ -175,6 +197,7 @@ export function QuickAddForm({
         value={type}
         onChange={(t) => {
           setType(t);
+          if (t === "refund") setPiggyId(null);
         }}
       />
 
@@ -195,12 +218,28 @@ export function QuickAddForm({
             key={b.id}
             color={b.color}
             leading={b.emoji}
-            selected={bucketId === b.id}
+            selected={piggy === undefined && bucketId === b.id}
             onClick={() => {
               setBucketId(b.id);
+              setPiggyId(null);
             }}
           >
             {b.name}
+          </Chip>
+        ))}
+        {piggies.map((p) => (
+          <Chip
+            key={p.id}
+            leading={
+              <PigIcon aria-hidden="true" className="size-4 text-piggy-strong" strokeWidth={2.2} />
+            }
+            selected={piggyId === p.id}
+            aria-label={`Spend from piggy: ${p.name}`}
+            onClick={() => {
+              setPiggyId(p.id);
+            }}
+          >
+            {p.name}
           </Chip>
         ))}
       </div>

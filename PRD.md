@@ -857,3 +857,4 @@ Wait for my go-ahead before starting the next phase.
     - **Swipe to delete:** swipe an entry left (in Recent, bucket detail and Activity) to reveal Delete; a full swipe deletes at once. Undo as always (§8.5).
     - **The month's budget can be changed after the month starts:** tap the month tank on Home to open the keypad. Unallocated / over-allocated updates live, and there's Undo (§8.2, §8.3).
     - **The note is presented as the entry's name** ("What was it? e.g. Starbucks"). It's the row's title, and the "logged" toast includes it (§8.4, §8.5).
+13. **Piggy details (Phase 5):** only Insurance is a yearly template; yearly piggies need a date; auto-stash puts in what's left of the month's plan once (piggies created this month start next month); moving what's left from a done piggy into another is a spend plus an opening amount, never a stash (§8.6).

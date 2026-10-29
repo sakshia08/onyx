@@ -3,9 +3,9 @@
  */
 
 import { format } from "date-fns";
-import { dayKeyOf, daysBetween, fromISODate } from "./dates";
+import { dayKeyOf, daysBetween, fromISODate, monthKeyOf } from "./dates";
 import { sumPaise, type Paise } from "./money";
-import type { DayKey, Entry } from "./types";
+import type { DayKey, Entry, MonthKey, Piggy, PiggyTxn } from "./types";
 
 export interface DayGroup {
   day: DayKey;
@@ -55,4 +55,67 @@ export function recentEntries(entries: readonly Entry[], count = 5): Entry[] {
 /** The time an entry was logged for, "13:42". */
 export function entryTime(entry: Pick<Entry, "date">): string {
   return entry.date.slice(11, 16);
+}
+
+// ── Activity with piggies (PRD §8.5) ──────────────────────────────────────
+
+export type ActivityItem =
+  | { kind: "entry"; entry: Entry; date: string; createdAt: string }
+  | { kind: "piggy"; piggy: Piggy; txn: PiggyTxn; date: string; createdAt: string };
+
+export interface ActivityDay {
+  day: DayKey;
+  label: string;
+  /** What the day took from the month: expenses − money back + stashes. Piggy spends don't count. */
+  total: Paise;
+  items: ActivityItem[];
+}
+
+/** Everything this month: entries, plus stashes into and spends from piggies. */
+export function monthActivity(
+  entries: readonly Entry[],
+  piggies: readonly Piggy[],
+  key: MonthKey,
+): ActivityItem[] {
+  const piggyItems: ActivityItem[] = piggies.flatMap((piggy) =>
+    piggy.transactions
+      .filter((t) => (t.type === "stash" || t.type === "spend") && monthKeyOf(t.date) === key)
+      .map((txn) => ({
+        kind: "piggy" as const,
+        piggy,
+        txn,
+        date: txn.date,
+        createdAt: txn.createdAt,
+      })),
+  );
+  const entryItems: ActivityItem[] = entries.map((entry) => ({
+    kind: "entry",
+    entry,
+    date: entry.date,
+    createdAt: entry.createdAt,
+  }));
+  return [...entryItems, ...piggyItems];
+}
+
+function monthEffect(item: ActivityItem): Paise {
+  if (item.kind === "entry")
+    return item.entry.type === "expense" ? item.entry.amount : -item.entry.amount;
+  return item.txn.type === "stash" ? item.txn.amount : 0;
+}
+
+export function groupActivityByDay(items: readonly ActivityItem[], today: DayKey): ActivityDay[] {
+  const sorted = [...items].sort((a, b) =>
+    a.date !== b.date ? (a.date < b.date ? 1 : -1) : a.createdAt < b.createdAt ? 1 : -1,
+  );
+  const days: ActivityDay[] = [];
+  for (const item of sorted) {
+    const day = dayKeyOf(item.date);
+    let group = days.at(-1);
+    if (group?.day !== day) {
+      group = { day, label: dayLabel(day, today), total: 0, items: [] };
+      days.push(group);
+    }
+    group.items.push(item);
+  }
+  return days.map((d) => ({ ...d, total: sumPaise(d.items.map(monthEffect)) }));
 }

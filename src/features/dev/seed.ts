@@ -1,7 +1,15 @@
-import { dayInMonth, isoForDay, monthKeyOfDate, toISODate } from "@/domain/dates";
+import { addMonths } from "date-fns";
+import {
+  dayInMonth,
+  dayKeyOfDate,
+  isoForDay,
+  monthKeyOfDate,
+  previousMonthKey,
+  toISODate,
+} from "@/domain/dates";
 import { rupees, type Paise } from "@/domain/money";
 import { createEmptyState } from "@/domain/state";
-import type { AppState, Bucket, Entry } from "@/domain/types";
+import type { AppState, Bucket, Entry, Piggy, PiggyTxn } from "@/domain/types";
 import { newId } from "@/lib/id";
 
 /** Dev only: a realistic month for trying screens before Quick add exists. */
@@ -66,9 +74,62 @@ export function sampleAppState(now: Date): AppState {
     entry("saving", rupees(26_000), 12, [10, 30], "Fixed deposit"),
   ];
   const empty = createEmptyState(now);
+  // Piggies saved into last month, so this month's numbers are only the entries above
+  const last = previousMonthKey(key);
+  const at = (monthKey: string, day: number) => isoForDay(monthKey, day, 10, 0);
+  const t = (type: PiggyTxn["type"], amount: Paise, date: string): PiggyTxn => ({
+    id: newId(),
+    type,
+    amount,
+    date,
+    monthKey: date.slice(0, 7),
+    createdAt: date,
+  });
+  const inMonths = (n: number) => dayKeyOfDate(addMonths(now, n));
+  const piggies: Piggy[] = [
+    {
+      id: "goa",
+      name: "Goa trip",
+      emoji: "🌴",
+      target: rupees(30_000),
+      targetDate: inMonths(4),
+      repeat: "none",
+      autoStash: false,
+      status: "active",
+      createdAt: at(last, 1),
+      transactions: [
+        t("opening", rupees(6_000), at(last, 1)),
+        t("stash", rupees(12_600), at(last, 5)),
+      ],
+    },
+    {
+      id: "insurance",
+      name: "Insurance",
+      emoji: "🛡️",
+      target: rupees(12_000),
+      targetDate: inMonths(2),
+      repeat: "yearly",
+      autoStash: false,
+      status: "active",
+      createdAt: at(last, 2),
+      transactions: [t("stash", rupees(8_000), at(last, 2))],
+    },
+    {
+      id: "phone",
+      name: "New phone",
+      emoji: "📱",
+      target: rupees(80_000),
+      repeat: "none",
+      autoStash: false,
+      status: "active",
+      createdAt: at(last, 3),
+      transactions: [t("opening", rupees(5_000), at(last, 3))],
+    },
+  ];
   return {
     ...empty,
     profile: { name: "Sakshi" },
+    piggies,
     activeMonthKey: key,
     months: {
       [key]: {
@@ -76,12 +137,26 @@ export function sampleAppState(now: Date): AppState {
         status: "active",
         totalBudget: rupees(60_000),
         buckets,
-        piggyPlans: [],
+        piggyPlans: [{ piggyId: "goa", planned: rupees(2_900) }],
         entries,
         recurringLog: [],
         alertsShown: [],
         createdAt: toISODate(now),
       },
     },
+  };
+}
+
+/** Dev only: last month closed, piggies saved, and no active month: opens setup with piggies. */
+export function sampleBeforeSetup(now: Date): AppState {
+  const state = sampleAppState(now);
+  const key = monthKeyOfDate(now);
+  const current = state.months[key];
+  if (!current) return state;
+  const last = previousMonthKey(key);
+  return {
+    ...state,
+    activeMonthKey: null,
+    months: { [last]: { ...current, key: last, status: "closed", entries: [], piggyPlans: [] } },
   };
 }

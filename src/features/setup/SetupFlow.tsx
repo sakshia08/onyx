@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
   dayInMonth,
+  dayKeyOfDate,
   daysInMonth,
   daysLeft,
   monthKeyOfDate,
@@ -9,7 +10,8 @@ import {
 } from "@/domain/dates";
 import type { Paise } from "@/domain/money";
 import { defaultBuckets, planFromPrevious } from "@/domain/setup";
-import type { Bucket } from "@/domain/types";
+import { suggestedThisMonth } from "@/domain/piggy";
+import type { Bucket, PiggyPlan } from "@/domain/types";
 import { newId } from "@/lib/id";
 import { startMonth } from "@/store/actions";
 import { useAppStore } from "@/store";
@@ -31,6 +33,13 @@ export function SetupFlow() {
   const [budget, setBudget] = useState<Paise>(0);
   const [buckets, setBuckets] = useState<Bucket[]>(() =>
     previous ? planFromPrevious(previous).buckets : defaultBuckets(newId),
+  );
+  // Each active piggy, prefilled with this month's suggestion (PRD §8.2, §7.4)
+  const piggies = useAppStore((s) => s.data.piggies);
+  const [piggyPlans, setPiggyPlans] = useState<PiggyPlan[]>(() =>
+    piggies
+      .filter((p) => p.status === "active")
+      .map((p) => ({ piggyId: p.id, planned: suggestedThisMonth(p, dayKeyOfDate(now)) ?? 0 })),
   );
 
   const today = dayInMonth(key, now);
@@ -71,11 +80,13 @@ export function SetupFlow() {
       budget={budget}
       buckets={buckets}
       onChange={setBuckets}
+      piggyPlans={piggyPlans}
+      onPlansChange={setPiggyPlans}
       onBack={() => {
         setStep(1);
       }}
       onStart={() => {
-        const result = startMonth(key, { totalBudget: budget, buckets, piggyPlans: [] }, now);
+        const result = startMonth(key, { totalBudget: budget, buckets, piggyPlans }, now);
         if (result.ok) void navigate("/", { replace: true });
       }}
     />

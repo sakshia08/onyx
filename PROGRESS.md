@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **Phase 4 deployed** at https://onyx-rust-one.vercel.app; waiting for the user to test on the iPhone (install, airplane mode). Then Phase 4 is done.
+**Current status:** **Phase 5 done** (waiting for the user's go-ahead to start Phase 6). Phase 4's airplane-mode check on the iPhone is still to do (the user will test it later).
 
 ## Checklist (PRD §14)
 
@@ -63,16 +63,18 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] **Phone feedback 1** (29 Oct): swipe left to delete entries (with Undo); tap the month tank to change the budget; the note field is now "What was it?" and shows as the entry's name (PRD §17 answer 12). Tested in `tests/e2e/phone-feedback.spec.ts`.
 
 ### Phase 5: Piggy banks (§8.6)
-- [ ] Piggy tab hero with the pig and swipe between piggies
-- [ ] Create/edit piggy, templates
-- [ ] Stash sheet and animation (coin drop, squish, fill)
-- [ ] Auto-stash
-- [ ] Spend from a piggy
-- [ ] Piggy detail and history
-- [ ] Goal reached: confetti, wiggle, "You did it!"
-- [ ] Yearly piggies
-- [ ] Piggy plans in setup
-- [ ] Empty state (sleeping pig)
+- [x] Piggy tab: hero pig per active piggy (swipe sideways, page dots), status pill, "This month: ₹X of ₹Y stashed", All piggies list with rings, completed section
+- [x] Create/edit piggy (full screen), templates, live "₹X/month for N months"
+- [x] Stash sheet (prefilled with what's left of the plan) and animation (coin drop, squish, fill), with Undo
+- [x] Auto-stash (fixed transaction id per piggy and month, so it can never happen twice)
+- [x] Spend from a piggy: from the Piggy tab or as a Quick add destination (expenses only)
+- [x] Piggy detail and history (swipe to delete, with Undo); done summary (saved, spent, left) with "move what's left" to another piggy
+- [x] Goal reached: confetti, wiggle, "You did it!" (Mark as done / Keep saving)
+- [x] Yearly piggies: cycles roll on; "New cycle started" note
+- [x] Piggy plans in setup (prefilled with suggestions, editable, ₹0 to skip)
+- [x] Empty state (sleeping pig and templates)
+- [x] Home: piggy peek (nearest date). Activity: stashes and spends with a pig badge, a Piggies filter
+- [x] Playwright: `tests/e2e/phase-5.spec.ts` (11 tests). Dev seed now has 3 piggies; `/#/dev/seed?setup=1` opens setup with piggies
 
 ### Phase 6: Recurring, rollover and recap
 - Note: setup is currently only reachable before the first month (`RequireNoMonth` in `src/app/gates.tsx`). Rollover must open setup for the new month after the recap.
@@ -116,6 +118,13 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - **tailwind-merge** is taught our token names in `src/lib/cn.ts` (otherwise it drops sizes like `text-display`). A test guards this.
 - **Tailwind defaults switched off** (colors, text sizes, radii, shadows), so only design tokens can be used.
 - **Design direction "Liquid":** the first design copied the inspo too closely; the user picked "Liquid" from three concepts (Liquid, Ledger, Dial). PRD §8.3, §9 and §10 updated. Tokens: `--accent-a/b/c` replaced by `--liquid` and `--accent`; new `text-hero`, `rounded-tank`, `rounded-vial`.
+- **Piggy decisions (Phase 5):**
+  - Templates: only Insurance is yearly, as the PRD lists it (Birthday and Diwali are one-time; changeable).
+  - A yearly piggy needs a date.
+  - Auto-stash stashes what's left of the month's plan, once. A piggy created this month starts auto-stashing next month.
+  - "Move what's left" from a done piggy is a spend from it plus an opening amount on the other, never a stash, so the month isn't touched.
+  - Piggy spends are logged through Quick add but aren't editable there; tap them to open the piggy, swipe to delete.
+  - In Activity a stash shows as −₹ (money out of the month); in a piggy's history it shows as +₹.
 - **App icon:** the pig filled with pink liquid on near-black, with a soft pink glow (`public/icon.svg`). Launch screens are black with the icon small in the middle.
 - **Offline test:** Playwright's test browsers don't keep a real cache store, so a full airplane-mode reload can't be faked. The PWA tests check the precache list and that the service worker takes control; airplane mode is checked on the iPhone.
 - **Install guide only on iPhone/iPad** (not on the laptop), and the Playwright tests pretend to be the installed app.

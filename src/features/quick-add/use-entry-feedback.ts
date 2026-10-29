@@ -4,8 +4,14 @@ import { dayKeyOfDate } from "@/domain/dates";
 import type { HeadsUpToast } from "@/domain/entries";
 import { formatAmount } from "@/domain/money";
 import { favoriteKey, shouldSuggestFavorite } from "@/domain/suggestions";
-import type { Entry } from "@/domain/types";
-import { addFavorite, deleteEntry, putBackEntry, rememberFavoriteAsked } from "@/store/actions";
+import type { Entry, Piggy } from "@/domain/types";
+import {
+  addFavorite,
+  deleteEntry,
+  deletePiggyTxn,
+  putBackEntry,
+  rememberFavoriteAsked,
+} from "@/store/actions";
 import { appStore } from "@/store";
 
 function bucketOf(entry: Pick<Entry, "bucketId">) {
@@ -89,6 +95,20 @@ export function useEntryFeedback() {
             label: "Undo",
             onAction: () => {
               putBackEntry(original);
+            },
+          },
+        });
+      },
+
+      spentFromPiggy(piggy: Piggy, amount: number, note: string, txnId: string) {
+        const what = note !== "" ? `${note} ${formatAmount(amount)}` : formatAmount(amount);
+        toast.show({
+          tone: "success",
+          message: `${what} spent from ${piggy.name}`,
+          action: {
+            label: "Undo",
+            onAction: () => {
+              deletePiggyTxn(piggy.id, txnId);
             },
           },
         });

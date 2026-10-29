@@ -11,7 +11,8 @@ interface PiggyPeekProps {
   emoji: string;
   saved: Paise;
   target: Paise;
-  daysLeft: number;
+  /** Null when the piggy has no date. */
+  daysLeft: number | null;
   onClick?: () => void;
   className?: string;
 }
@@ -56,8 +57,9 @@ export function PiggyPeek({
         </span>
         <Amount value={saved} size="title" rounded animated />
         <span className="text-caption text-text-2">
-          of <Amount value={target} size="caption" tone="inherit" rounded /> · {daysLeft}{" "}
-          {daysLeft === 1 ? "day" : "days"}
+          of <Amount value={target} size="caption" tone="inherit" rounded />
+          {daysLeft !== null &&
+            ` · ${daysLeft < 0 ? "date passed" : `${String(daysLeft)} ${daysLeft === 1 ? "day" : "days"}`}`}
         </span>
       </span>
       <ChevronRight aria-hidden="true" className="relative size-5 shrink-0 text-text-3" />
