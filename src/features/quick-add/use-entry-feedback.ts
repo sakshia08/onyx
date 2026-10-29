@@ -64,10 +64,12 @@ export function useEntryFeedback() {
     return {
       logged(entry: Entry, headsUp: HeadsUpToast | null) {
         const name = bucketOf(entry)?.name ?? "bucket";
+        // "Starbucks ₹500 logged to Food", or without a name "₹500 logged to Food"
+        const what = entry.note?.trim()
+          ? `${entry.note.trim()} ${formatAmount(entry.amount)}`
+          : formatAmount(entry.amount);
         const message =
-          entry.type === "refund"
-            ? `${formatAmount(entry.amount)} money back to ${name}`
-            : `${formatAmount(entry.amount)} logged to ${name}`;
+          entry.type === "refund" ? `${what} money back to ${name}` : `${what} logged to ${name}`;
         toast.show({
           ...withHeadsUp(message, headsUp),
           action: {

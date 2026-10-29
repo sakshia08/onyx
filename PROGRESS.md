@@ -2,7 +2,7 @@
 
 Where we are, what we decided, and ideas for later. Updated at the end of every phase so a new session can pick up exactly where we left off.
 
-**Current status:** **Phase 4 built**; waiting for the user to deploy to Vercel and test on the iPhone. Then Phase 4 is done. 193 unit, 31 screen and 5 PWA tests passing.
+**Current status:** **Phase 4 deployed** at https://onyx-rust-one.vercel.app; waiting for the user to test on the iPhone (install, airplane mode). Then Phase 4 is done.
 
 ## Checklist (PRD §14)
 
@@ -58,8 +58,9 @@ Where we are, what we decided, and ideas for later. Updated at the end of every 
 - [x] Install guide (iPhone/iPad Safari only, "Continue in browser" skips it for good)
 - [x] Less-used screens (welcome, setup, bucket detail, activity) load on demand
 - [x] `npm run test:pwa`: production-build tests (precache list, service worker control, manifest and icons, install guide, no outside requests)
-- [ ] **Deploy** to Vercel from the public GitHub repo (the user's account; steps given in chat)
+- [x] **Deployed** to Vercel from the public GitHub repo: https://onyx-rust-one.vercel.app (redeploys on every push to `main`)
 - [ ] **Test on the iPhone**: add to Home Screen, airplane mode, update prompt
+- [x] **Phone feedback 1** (29 Oct): swipe left to delete entries (with Undo); tap the month tank to change the budget; the note field is now "What was it?" and shows as the entry's name (PRD §17 answer 12). Tested in `tests/e2e/phone-feedback.spec.ts`.
 
 ### Phase 5: Piggy banks (§8.6)
 - [ ] Piggy tab hero with the pig and swipe between piggies

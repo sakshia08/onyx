@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Screen } from "@/app/Screen";
 import { BucketVial } from "@/components/BucketVial";
@@ -14,6 +15,7 @@ import { useActiveMonth, useNow } from "@/store/hooks";
 import { useAppStore } from "@/store";
 import { BucketEntryRow } from "../entries/EntryList";
 import { useQuickAdd } from "../quick-add/quick-add-context";
+import { BudgetSheet } from "./BudgetSheet";
 import { QuickLogRow } from "./QuickLogRow";
 import { RecentEmpty } from "./RecentEmpty";
 
@@ -23,6 +25,7 @@ export function HomeScreen() {
   const now = useNow();
   const name = useAppStore((s) => s.data.profile.name);
   const piggies = useAppStore((s) => s.data.piggies);
+  const [budgetOpen, setBudgetOpen] = useState(false);
   if (month === null) return null;
 
   const today = dayInMonth(month.key, now);
@@ -43,7 +46,11 @@ export function HomeScreen() {
         totalBudget={month.totalBudget}
         used={monthUsed(month, piggies)}
         daysLeft={daysLeft(today, days)}
+        onEditBudget={() => {
+          setBudgetOpen(true);
+        }}
       />
+      <BudgetSheet month={month} open={budgetOpen} onOpenChange={setBudgetOpen} />
 
       <QuickLogRow month={month} />
 
@@ -58,7 +65,7 @@ export function HomeScreen() {
               trailing: (
                 <Link
                   to="/activity"
-                  className="inline-flex min-h-11 items-center text-callout text-text-2"
+                  className="-my-3 inline-flex items-center py-3 text-callout text-text-2"
                 >
                   See all
                 </Link>

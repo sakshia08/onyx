@@ -3,11 +3,13 @@
  */
 
 import { toISODate } from "@/domain/dates";
+import type { Paise } from "@/domain/money";
 import {
   deleteBucket as deleteBucketRule,
   moveEntries,
   startMonth as startMonthRule,
   updateBucket as updateBucketRule,
+  updateTotalBudget,
   type MonthPlan,
   type StartMonthResult,
 } from "@/domain/setup";
@@ -165,4 +167,9 @@ export function rememberFavoriteAsked(key: string): void {
 /** "Continue in browser" on the install guide (PRD §8.1). */
 export function dismissInstallGuide(): void {
   appStore.getState().update((d) => ({ ...d, meta: { ...d.meta, installGuideDismissed: true } }));
+}
+
+/** "Edit budget" on Home: the month's total can change after it starts. */
+export function setMonthBudget(key: MonthKey, totalBudget: Paise): void {
+  appStore.getState().update((d) => updateMonth(d, key, (m) => updateTotalBudget(m, totalBudget)));
 }

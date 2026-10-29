@@ -19,6 +19,8 @@ interface TankProps {
   children: React.ReactNode;
   /** Bottom line, over the liquid. */
   footer?: React.ReactNode;
+  /** Makes the whole tank tappable, e.g. to edit the month's budget. */
+  onPress?: { label: string; action: () => void };
   className?: string;
 }
 
@@ -36,6 +38,7 @@ export function Tank({
   header,
   children,
   footer,
+  onPress,
   className,
 }: TankProps) {
   return (
@@ -63,7 +66,15 @@ export function Tank({
           style={{ bottom: `${pace * 100}%` }}
         />
       )}
-      <div className="relative flex h-full flex-col p-6">
+      {onPress && (
+        <button
+          type="button"
+          aria-label={onPress.label}
+          onClick={onPress.action}
+          className="absolute inset-0 z-10 rounded-tank active:bg-text-1/5"
+        />
+      )}
+      <div className="pointer-events-none relative flex h-full flex-col p-6">
         <div className="flex min-h-8 items-center justify-between gap-3">{header}</div>
         {children}
         {footer !== undefined && <div className="mt-auto">{footer}</div>}

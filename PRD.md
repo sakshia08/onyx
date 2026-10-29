@@ -853,3 +853,7 @@ Wait for my go-ahead before starting the next phase.
 9. **Design direction "Liquid"** (chosen from three concepts after the first design looked too close to the inspo): month tank, bucket vials, liquid fills everywhere, new tab bar. Replaces the aurora hero card and the 2-column bucket grid (§8.3, §9, §10).
 10. **Bucket detail uses a tank** in the bucket's color with the pace notch, instead of a progress bar, to match the Liquid direction (§8.5). Day totals follow the entry rule: spent shows as −₹, a day with more money back than spent as +₹.
 11. **App icon:** the pig filled with pink liquid on near-black (`public/icon.svg`). All icon sizes and the black iOS launch screens are generated from it at build time (§12.3).
+12. **Changes after the first iPhone test (29 Oct 2026):**
+    - **Swipe to delete:** swipe an entry left (in Recent, bucket detail and Activity) to reveal Delete; a full swipe deletes at once. Undo as always (§8.5).
+    - **The month's budget can be changed after the month starts:** tap the month tank on Home to open the keypad. Unallocated / over-allocated updates live, and there's Undo (§8.2, §8.3).
+    - **The note is presented as the entry's name** ("What was it? e.g. Starbucks"). It's the row's title, and the "logged" toast includes it (§8.4, §8.5).

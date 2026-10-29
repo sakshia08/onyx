@@ -95,12 +95,14 @@ test("money back, a back-dated entry, and note suggestions", async ({ page }) =>
   // Note suggestions pick the usual bucket
   await openAdd(page);
   await typeAmount(page, "180");
-  await sheet(page).getByPlaceholder("Add a note").fill("do");
+  await sheet(page)
+    .getByPlaceholder(/What was it/)
+    .fill("do");
   const suggestion = sheet(page).getByRole("button", { name: "Dosa and filter coffee" });
   await expect(suggestion).toBeVisible();
   await shot(page, "quick-add-suggestions-390");
   await suggestion.click();
-  await expect(sheet(page).getByPlaceholder("Add a note")).toHaveValue("Dosa and filter coffee");
+  await expect(sheet(page).getByPlaceholder(/What was it/)).toHaveValue("Dosa and filter coffee");
   await expect(bucketChip(page, "Food")).toHaveAttribute("aria-pressed", "true");
 
   // Back-date it to Monday 16 November
@@ -164,7 +166,9 @@ test("favorites: offered after 3 times, then one tap from Home", async ({ page }
     await openAdd(page);
     await typeAmount(page, "40");
     await bucketChip(page, "Commute").click();
-    await sheet(page).getByPlaceholder("Add a note").fill("Metro");
+    await sheet(page)
+      .getByPlaceholder(/What was it/)
+      .fill("Metro");
     await sheet(page).getByRole("button", { name: "Save", exact: true }).click();
     await expect(sheet(page)).toBeHidden();
   }

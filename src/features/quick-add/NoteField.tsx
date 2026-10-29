@@ -10,7 +10,10 @@ interface NoteFieldProps {
   onOpenDays: () => void;
 }
 
-/** The optional note, its suggestions, and the date chip (PRD §8.4). */
+/**
+ * The entry's name ("Starbucks"), stored as its note (PRD §8.4): it becomes the row's title.
+ * With its suggestions and the date chip.
+ */
 export function NoteField({
   value,
   onChange,
@@ -23,11 +26,11 @@ export function NoteField({
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <label className="flex h-11 min-w-0 flex-1 items-center rounded-pill border border-hairline bg-surface-2 px-4">
-          <span className="sr-only">Note</span>
+          <span className="sr-only">Name (what was it?)</span>
           <input
             value={value}
             maxLength={60}
-            placeholder="Add a note"
+            placeholder="What was it? e.g. Starbucks"
             autoComplete="off"
             enterKeyHint="done"
             onChange={(e) => {
@@ -51,7 +54,7 @@ export function NoteField({
       {suggestions.length > 0 && (
         <div
           className="flex gap-2 overflow-x-auto [scrollbar-width:none]"
-          aria-label="Suggested notes"
+          aria-label="Suggested names"
         >
           {suggestions.map((s) => (
             <Chip

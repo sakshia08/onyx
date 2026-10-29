@@ -6,6 +6,7 @@ import {
   bucketsForHome,
   parseAllocation,
   updateBucket,
+  updateTotalBudget,
   canDeleteBucket,
   committedRecurring,
   defaultBuckets,
@@ -15,6 +16,7 @@ import {
   startMonth,
 } from "./setup";
 import { BUCKETS, entry, newId, november, rule } from "./testing";
+import { unallocated } from "./totals";
 import type { Month } from "./types";
 
 const NOW = "2026-10-26T09:30:00";
@@ -186,5 +188,26 @@ describe("editing buckets (PRD §8.5)", () => {
     const { spend, save } = bucketsForHome(shuffled);
     expect(spend.map((b) => b.id)).toEqual(["leisure", "commute", "food"]);
     expect(save.map((b) => b.id)).toEqual(["saving", "investing"]);
+  });
+});
+
+describe("changing the budget mid-month", () => {
+  it("updates the current month's total, and unallocated follows", () => {
+    const month = updateTotalBudget(november(), rupees(65_000));
+    expect(month.totalBudget).toBe(rupees(65_000));
+    expect(unallocated(month)).toBe(rupees(6_000));
+  });
+
+  it("allows going below what's allocated (over-allocated warning)", () => {
+    expect(unallocated(updateTotalBudget(november(), rupees(50_000)))).toBe(-rupees(9_000));
+  });
+
+  it("refuses ₹0, negatives and more than ₹1 crore, and past months", () => {
+    const month = november();
+    expect(updateTotalBudget(month, 0)).toBe(month);
+    expect(updateTotalBudget(month, -1)).toBe(month);
+    expect(updateTotalBudget(month, rupees(1_00_00_000) + 1)).toBe(month);
+    const closed = { ...month, status: "closed" as const };
+    expect(updateTotalBudget(closed, rupees(1_000))).toBe(closed);
   });
 });

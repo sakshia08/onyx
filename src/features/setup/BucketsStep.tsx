@@ -13,6 +13,7 @@ import { BucketEditorSheet } from "../buckets/BucketEditorSheet";
 import { BackButton } from "./BackButton";
 import { FullScreen } from "./FullScreen";
 import { SetupBucketRow } from "./SetupBucketRow";
+import { UnallocatedLine } from "./UnallocatedLine";
 import { StepDots } from "./StepDots";
 
 interface BucketsStepProps {
@@ -128,23 +129,5 @@ export function BucketsStep({
         />
       )}
     </FullScreen>
-  );
-}
-
-function UnallocatedLine({ amount }: { amount: Paise }) {
-  if (amount < 0) {
-    return (
-      <p className="text-center text-callout text-warning">
-        Over-allocated by <Amount value={-amount} size="callout" tone="inherit" />
-      </p>
-    );
-  }
-  if (amount === 0) {
-    return <p className="text-center text-callout text-text-2">Every rupee has a bucket</p>;
-  }
-  return (
-    <p className="text-center text-callout text-text-2">
-      <Amount value={amount} size="callout" tone="inherit" /> unallocated
-    </p>
   );
 }

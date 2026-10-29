@@ -169,3 +169,15 @@ export function bucketsForHome(buckets: readonly Bucket[]): { spend: Bucket[]; s
     save: sorted.filter((b) => b.kind === "save"),
   };
 }
+
+/**
+ * Changes the month's total budget after it has started (current month only).
+ * Must be more than ₹0 and at most ₹1,00,00,000. Over-allocating is allowed, as in setup.
+ */
+export function updateTotalBudget(month: Month, totalBudget: Paise): Month {
+  if (month.status !== "active") return month;
+  if (!Number.isSafeInteger(totalBudget) || totalBudget <= 0 || totalBudget > MAX_BUDGET) {
+    return month;
+  }
+  return { ...month, totalBudget };
+}

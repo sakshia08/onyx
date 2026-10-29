@@ -1,30 +1,46 @@
 import { Amount } from "@/components/Amount";
 import { EntryRow } from "@/components/EntryRow";
+import { SwipeToDelete } from "@/components/SwipeToDelete";
 import { entryTime, type DayGroup } from "@/domain/activity";
 import { spokenAmount } from "@/domain/money";
 import type { Bucket, Entry } from "@/domain/types";
+import { deleteEntry } from "@/store/actions";
 import { useQuickAdd } from "../quick-add/quick-add-context";
+import { useEntryFeedback } from "../quick-add/use-entry-feedback";
 
-/** An entry as a row: the note (or bucket name), "13:42 · Food", and the amount (PRD §8.5). */
+/**
+ * An entry as a row: its name (or the bucket name), "13:42 · Food", and the amount (PRD §8.5).
+ * Tap to edit; swipe left to delete, with Undo.
+ */
 export function BucketEntryRow({ entry, bucket }: { entry: Entry; bucket: Bucket | undefined }) {
   const quickAdd = useQuickAdd();
+  const feedback = useEntryFeedback();
   const name = bucket?.name ?? "Unknown bucket";
   const note = entry.note?.trim();
   const detail = [entryTime(entry), name, entry.type === "refund" ? "Money back" : null]
     .filter(Boolean)
     .join(" · ");
+  const title = note !== undefined && note !== "" ? note : name;
   return (
-    <EntryRow
-      emoji={bucket?.emoji ?? "•"}
-      color={bucket?.color ?? "slate"}
-      title={note !== undefined && note !== "" ? note : name}
-      detail={detail}
-      amount={entry.amount}
-      type={entry.type}
-      onClick={() => {
-        quickAdd.openEdit(entry);
+    <SwipeToDelete
+      label={title}
+      onDelete={() => {
+        const removed = deleteEntry(entry.id);
+        if (removed) feedback.deleted(removed);
       }}
-    />
+    >
+      <EntryRow
+        emoji={bucket?.emoji ?? "•"}
+        color={bucket?.color ?? "slate"}
+        title={title}
+        detail={detail}
+        amount={entry.amount}
+        type={entry.type}
+        onClick={() => {
+          quickAdd.openEdit(entry);
+        }}
+      />
+    </SwipeToDelete>
   );
 }
 
